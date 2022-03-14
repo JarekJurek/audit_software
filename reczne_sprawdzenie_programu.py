@@ -6,8 +6,8 @@ import csv
 def changing_dir_meat(): #zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
     meat_name=input('Podaj nazwe mięsa')
     meat_name=meat_name.strip()
-    path_main='D:\\praca\\'  #początek ścieżki absolutnej
-    path=os.path.join(path_main, meat_name, 'wyniki')
+    path_main='C:\\Users\\produkcja\\Desktop\\dane\\'  #początek ścieżki absolutnej
+    path=os.path.join(path_main, meat_name, 'results')
     os.chdir(path)
     #print(path)
     return path, meat_name
