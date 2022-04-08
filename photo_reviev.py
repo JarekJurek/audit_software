@@ -96,11 +96,10 @@ def main():
             if line == total_lines:
                     break
         elif key == ord('a'):
-            all_photos -= 1
             if photo == 0:
                 if test == 0:
                     if line == 0:
-                        print("wyjebałeś za daleko ziomek")
+                        print("koniec foteczek")
                         break
                     else:
                         line = line - 1
