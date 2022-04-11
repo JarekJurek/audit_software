@@ -38,7 +38,7 @@ def input_box():
 
     var = tk.IntVar()
 
-    R1 = tk.Radiobutton(root, text="Czerwony", variable=var, value=1, command=sel)
+    R1 = tk.Radiobutton(root, text="False positive", variable=var, value=1, command=sel)
     R1.pack(anchor=tk.W)
 
     R2 = tk.Radiobutton(root, text="Zielony", variable=var, value=2, command=sel)
@@ -52,6 +52,9 @@ def input_box():
 
     R5 = tk.Radiobutton(root, text="Biały", variable=var, value=5, command=sel)
     R5.pack(anchor=tk.W)
+
+    R6 = tk.Radiobutton(root, text="Czerwony", variable=var, value=1, command=sel)
+    R6.pack(anchor=tk.W)
 
     label = tk.Label(root)
     label.pack()
