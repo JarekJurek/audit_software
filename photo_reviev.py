@@ -8,6 +8,8 @@ import tkinter as tk
 pollution_name = "empty"
 
 
+
+
 def input_box():
     root = tk.Tk()
     canvas1 = tk.Canvas(root, width=200, height=150)
@@ -29,6 +31,30 @@ def input_box():
 
     quitButton = tk.Button(text='Wyjdź', command=root.destroy)
     canvas1.create_window(130, 100, window=quitButton)  # button placement
+
+    def sel():
+        selection = "You selected the option " + str(var.get())
+        label.config(text=selection)
+
+    var = tk.IntVar()
+
+    R1 = tk.Radiobutton(root, text="Czerwony", variable=var, value=1, command=sel)
+    R1.pack(anchor=tk.W)
+
+    R2 = tk.Radiobutton(root, text="Zielony", variable=var, value=2, command=sel)
+    R2.pack(anchor=tk.W)
+
+    R3 = tk.Radiobutton(root, text="Niebieski", variable=var, value=3, command=sel)
+    R3.pack(anchor=tk.W)
+
+    R4 = tk.Radiobutton(root, text="Czarny", variable=var, value=4, command=sel)
+    R4.pack(anchor=tk.W)
+
+    R5 = tk.Radiobutton(root, text="Biały", variable=var, value=5, command=sel)
+    R5.pack(anchor=tk.W)
+
+    label = tk.Label(root)
+    label.pack()
 
     root.mainloop()
 
