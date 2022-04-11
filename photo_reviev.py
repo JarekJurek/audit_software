@@ -11,7 +11,6 @@ def changing_dir_meat():  # zmienia ścieżkę w zależności od mięsa oraz zwr
     path_main = 'E:\\dane\\'  # początek ścieżki absolutnej
     path = os.path.join(path_main, meat_name, 'results')
     os.chdir(path)
-    # print(path)
     return path, meat_name
 
 
@@ -33,8 +32,6 @@ def file_number_changer(image_number, path):  # zmienia ścieżkę do pliku ze z
     image_extension = '.jpg'
     image_name = f'{image_name}{image_number}{image_extension}'
     image_path = os.path.join(path, image_name)
-    # print(image_name)
-    # eturn image_name
     return image_path
 
 
@@ -48,33 +45,24 @@ def main():
     path, meat_name = changing_dir_meat()  # nazwa mięsa oraz
     pathog = path  # ścieżka główna, która się nie zmienia
     lines = dir_list(path)  # lista linii
-    # print(lines)
     total_lines = dir_counter(path)  # liczba folderów z linią
-    # print(total_lines)
     line = 0  # potrzebne do chodzenia po listach
     photo = 0
     test = 0
     color = (255, 0, 0)
     font = cv.FONT_HERSHEY_SIMPLEX
-    # print(lines, tests, photos)
     while True:
         path = os.path.join(pathog, lines[line], meat_name)
-        # print(path)
         tests = dir_list(path)
         total_tests = dir_counter(path)
-        # print(total_tests)
         path1 = path  # pomocnicza do cofania
         path = os.path.join(path, tests[test], '0')
         photos = dir_list(path)
         photos.sort(key=int)
         total_photo = dir_counter(path)
-        # print(total_photo)
         result_name = os.path.join(path, photos[photo], 'result.jpg')
         with open(jsonpath(os.path.join(path, photos[photo]))) as file:
             results_data = json.load(file)
-        with open(jsonpath(os.path.join(path, photos[photo]))) as file:
-            results_data = json.load(file)
-        # print(os.path.join(path, photos[photo]))
         if os.path.exists(file_number_changer(4, os.path.join(path, photos[photo]))):
             image_name0 = file_number_changer(4, os.path.join(path, photos[photo]))
         else:
@@ -83,7 +71,6 @@ def main():
         result = cv.imread(result_name)
         Hori = np.concatenate((image0, result), axis=1)  # łączyobrazki
         results = results_data["count"]
-        # print(results)
         cv.namedWindow("window", cv.WND_PROP_FULLSCREEN)
         cv.setWindowProperty("window", cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
         cv.putText(Hori, f"Pollution : {results}", (1000, 20), font, 0.5, color, 1)
@@ -97,19 +84,16 @@ def main():
             if test == total_tests:
                 line += 1
                 test = 0
-                # print(line)
             if line == total_lines:
                 print("koniec zdjec")
                 break
         elif key == ord('a'):
             photo = photo - 1
-            # print(photo)
             if photo == -1:
                 test = test - 1
                 path1 = os.path.join(path1, tests[test], '0')
                 total_photo = dir_counter(path1)
                 photo = total_photo - 1
-                # print("test", test)
                 if test == -1:
                     line = line - 1
                     if line == -1:
@@ -117,17 +101,10 @@ def main():
                         break
                     path2 = os.path.join(pathog, lines[line], meat_name)
                     total_tests = dir_counter(path2)
-                    # print("line", line)
                     test = total_tests - 1
                     path3 = os.path.join(path2, tests[test], '0')
                     total_photo = dir_counter(path3)
                     photo = total_photo - 1
-                    # print("xd",photo,tests[test],lines[line],path3)
-
-
-
-
-
 
         elif key == 27:
             break
