@@ -31,7 +31,6 @@ def input_box():
     canvas1.create_window(130, 100, window=quitButton)  # button placement
 
     root.mainloop()
-    return pollution_name
 
 
 def changing_dir_meat():  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
