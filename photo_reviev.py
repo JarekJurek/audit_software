@@ -12,52 +12,72 @@ pollution_name = "empty"
 
 def input_box():
     root = tk.Tk()
-    canvas1 = tk.Canvas(root, width=200, height=150)
+    canvas1 = tk.Canvas(root, width=200, height=60)
     canvas1.pack()
-    entry1 = tk.Entry(root)
-    canvas1.create_window(100, 70, window=entry1)  # input box placement
 
-    def get_pollution_name():
-        global pollution_name
-        pollution_name = entry1.get()
-        if pollution_name != "empty":
-            print("Nowe zanieczyszczenie: ", pollution_name)
-            # tutaj zapis danej pollution_name do JSONa
-        label1 = tk.Label(root, text="Zapisano!")
-        canvas1.create_window(100, 130, window=label1)  # output message box placement
+    var1 = tk.IntVar()
+    var2 = tk.IntVar()
+    var3 = tk.IntVar()
+    var4 = tk.IntVar()
+    var5 = tk.IntVar()
+    var6 = tk.IntVar()
+    var7 = tk.IntVar()
+    var8 = tk.IntVar()
+    var9 = tk.IntVar()
 
-    buttonLabel = tk.Button(text='Zapisz', command=get_pollution_name)
-    canvas1.create_window(70, 100, window=buttonLabel)  # button placement
-
-    quitButton = tk.Button(text='Wyjdź', command=root.destroy)
-    canvas1.create_window(130, 100, window=quitButton)  # button placement
-
-    def sel():
-        selection = "You selected the option " + str(var.get())
-        label.config(text=selection)
-
-    var = tk.IntVar()
-
-    R1 = tk.Radiobutton(root, text="False positive", variable=var, value=1, command=sel)
+    R1 = tk.Checkbutton(root, text="False positive", variable=var1, onvalue=1, offvalue=0)
     R1.pack(anchor=tk.W)
 
-    R2 = tk.Radiobutton(root, text="Zielony", variable=var, value=2, command=sel)
+    R2 = tk.Checkbutton(root, text="Zielony", variable=var2, onvalue=1, offvalue=0)
     R2.pack(anchor=tk.W)
 
-    R3 = tk.Radiobutton(root, text="Niebieski", variable=var, value=3, command=sel)
+    R3 = tk.Checkbutton(root, text="Niebieski", variable=var3, onvalue=1, offvalue=0)
     R3.pack(anchor=tk.W)
 
-    R4 = tk.Radiobutton(root, text="Czarny", variable=var, value=4, command=sel)
+    R4 = tk.Checkbutton(root, text="Czarny", variable=var4, onvalue=1, offvalue=0)
     R4.pack(anchor=tk.W)
 
-    R5 = tk.Radiobutton(root, text="Biały", variable=var, value=5, command=sel)
+    R5 = tk.Checkbutton(root, text="Biały", variable=var5, onvalue=1, offvalue=0)
     R5.pack(anchor=tk.W)
 
-    R6 = tk.Radiobutton(root, text="Czerwony", variable=var, value=1, command=sel)
+    R6 = tk.Checkbutton(root, text="Szary", variable=var6, onvalue=1, offvalue=0)
     R6.pack(anchor=tk.W)
+
+    R7 = tk.Checkbutton(root, text="Czerwony", variable=var7, onvalue=1, offvalue=0)
+    R7.pack(anchor=tk.W)
+
+    R8 = tk.Checkbutton(root, text="Żółty", variable=var8, onvalue=1, offvalue=0)
+    R8.pack(anchor=tk.W)
+
+    R9 = tk.Checkbutton(root, text="Pomarańczowy", variable=var9, onvalue=1, offvalue=0)
+    R9.pack(anchor=tk.W)
 
     label = tk.Label(root)
     label.pack()
+
+    def save_choice():
+        dataBase = {
+            "False positive": var1.get(),
+            "Zielony": var2.get(),
+            "Niebieski": var3.get(),
+            "Czarny": var4.get(),
+            "Biały": var5.get(),
+            "Szary": var6.get(),
+            "Czerwony": var7.get(),
+            "Żółty": var8.get(),
+            "Pomarańczowy": var9.get(),
+        }
+        for key, value in dataBase.items():
+            if value is not 0:
+                print(key)  # tą wartość (konkretny kolor) należy tutaj zpisać do pliku razem ze ścieżką
+        label1 = tk.Label(root, text="Zapisano!")
+        canvas1.create_window(100, 60, window=label1)  # output message box placement
+
+    buttonLabel = tk.Button(text='Zapisz', command=save_choice)
+    canvas1.create_window(70, 30, window=buttonLabel)  # button placement
+
+    quitButton = tk.Button(text='Wyjdź', command=root.destroy)
+    canvas1.create_window(130, 30, window=quitButton)  # button placement
 
     root.mainloop()
 
