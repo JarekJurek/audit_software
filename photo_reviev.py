@@ -3,6 +3,35 @@ import cv2 as cv
 import numpy as np
 import csv
 import json
+import tkinter as tk
+
+pollution_name = "empty"
+
+
+def input_box():
+    root = tk.Tk()
+    canvas1 = tk.Canvas(root, width=200, height=150)
+    canvas1.pack()
+    entry1 = tk.Entry(root)
+    canvas1.create_window(100, 70, window=entry1)  # input box placement
+
+    def get_pollution_name():
+        global pollution_name
+        pollution_name = entry1.get()
+        if pollution_name != "empty":
+            print("Nowe zanieczyszczenie: ", pollution_name)
+            # tutaj zapis danej pollution_name do JSONa
+        label1 = tk.Label(root, text="Zapisano!")
+        canvas1.create_window(100, 130, window=label1)  # output message box placement
+
+    buttonLabel = tk.Button(text='Zapisz', command=get_pollution_name)
+    canvas1.create_window(70, 100, window=buttonLabel)  # button placement
+
+    quitButton = tk.Button(text='Wyjdź', command=root.destroy)
+    canvas1.create_window(130, 100, window=quitButton)  # button placement
+
+    root.mainloop()
+    return pollution_name
 
 
 def changing_dir_meat():  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
@@ -75,8 +104,13 @@ def main():
         cv.setWindowProperty("window", cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
         cv.putText(Hori, f"Pollution : {results}", (1000, 20), font, 0.5, color, 1)
         cv.imshow('window', Hori)
+
         key = cv.waitKey(1)
-        if key == ord('d'):
+
+        if key == ord('p'):
+            input_box()
+
+        elif key == ord('d'):
             photo = photo + 1
             if photo == total_photo:
                 photo = 0
