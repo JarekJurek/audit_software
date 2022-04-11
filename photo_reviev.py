@@ -7,7 +7,7 @@ import json
 def changing_dir_meat(): #zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
     meat_name=input('Podaj nazwe mięsa')
     meat_name=meat_name.strip()
-    path_main='D:\\praca\\'  #początek ścieżki absolutnej
+    path_main='E:\\dane\\'  #początek ścieżki absolutnej
     path=os.path.join(path_main, meat_name, 'results')
     os.chdir(path)
     #print(path)
@@ -46,6 +46,7 @@ def main():
     path, meat_name = changing_dir_meat() #nazwa mięsa oraz
     pathog=path #ścieżka główna, która się nie zmienia
     lines = dir_list(path) #lista linii
+    #print(lines)
     total_lines = dir_counter(path) #liczba folderów z linią
     #print(total_lines)
     line = 0  # potrzebne do chodzenia po listach
@@ -59,6 +60,7 @@ def main():
         #print(path)
         tests = dir_list(path)
         total_tests = dir_counter(path)
+        print(total_tests)
         #print(total_tests)
         path = os.path.join(path, tests[test], '0')
         photos = dir_list(path)
@@ -81,7 +83,7 @@ def main():
         #print(results)
         cv.namedWindow("window", cv.WND_PROP_FULLSCREEN)
         cv.setWindowProperty("window", cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
-        cv.putText(Hori,f"Pollution : {results}",[1100,20],font,0.5,color,1)
+        cv.putText(Hori,f"Pollution : {results}",(1000,20),font,0.5,color,1)
         cv.imshow('window',Hori)
         key = cv.waitKey(1)
         if key == ord('d'):
@@ -96,17 +98,23 @@ def main():
             if line == total_lines:
                     break
         elif key == ord('a'):
-            if photo == 0:
-                if test == 0:
-                    if line == 0:
-                        print("koniec foteczek")
-                        break
-                    else:
-                        line = line - 1
-                else:
-                    test = test - 1
-            else:
-             photo = photo - 1
+            photo=photo-1
+            print(photo)
+            if photo ==-1:
+                test=test-1
+                print("test",test)
+            if test==-1:
+                photo =total_photo-1
+                line=line-1
+                print("line",line)
+                test = total_tests-1
+                print(test)
+            if line == -1:
+                print("Koniec foteczek")
+                break
+
+
+
 
         elif key == 27:
             break
