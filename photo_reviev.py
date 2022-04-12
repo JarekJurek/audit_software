@@ -3,12 +3,24 @@ import cv2 as cv
 import numpy as np
 import csv
 import json
+import pickle
 import tkinter as tk
+
+from pkg_resources import add_activation_listener
+# import OGXImage
 
 pollution_name = "empty"
 
-
-
+pollution_database =  [ "No pollution",
+                        "False positive",
+                        "Zielony",
+                        "Niebieski",
+                        "Czarny",
+                        "Biały",
+                        "Szary",
+                        "Czerwony",
+                        "Żółty",
+                        "Pomarańczowy" ]
 
 def input_box():
     root = tk.Tk()
@@ -82,14 +94,31 @@ def input_box():
     root.mainloop()
 
 
-def changing_dir_meat():  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
-    meat_name = input('Podaj nazwe mięsa')
-    meat_name = meat_name.strip()
-    path_main = 'E:\\dane\\'  # początek ścieżki absolutnej
+def changing_dir_meat(meat_name):  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
+    if meat_name is None:
+        meat_name = input('Podaj nazwe mięsa')
+        meat_name = meat_name.strip()
+    path_main = 'C:\\Users\\Janki\\Projects\\agromaks\\data'  # początek ścieżki absolutnej
     path = os.path.join(path_main, meat_name, 'results')
     os.chdir(path)
     return path, meat_name
 
+def get_series_path_list(meat_name):
+    series_path_list = []
+    if meat_name is None:
+        meat_name = input('Podaj nazwe mięsa')
+        meat_name = meat_name.strip()
+    data_path_main = 'C:\\Users\\Janki\\Projects\\agromaks\\data'  # początek ścieżki absolutnej
+    linia_path_main = os.path.join(data_path_main, meat_name, 'data')
+    linia_paths = dir_list(linia_path_main)
+    for linia_path in linia_paths:
+        test_path_main = os.path.join(linia_path_main, linia_path, meat_name)
+        test_paths = dir_list(test_path_main)
+        for test_path in test_paths:
+            series_path = os.path.join(test_path_main, test_path, '0', 'camera_series')
+            results_path = os.path.join(data_path_main, meat_name, 'results', linia_path, meat_name, test_path, '0')
+            series_path_list.append((series_path, results_path))
+    return series_path_list
 
 def dir_list(path):  # ma zwracać listę folderów w folderze
     list = os.listdir(path)
@@ -117,82 +146,241 @@ def jsonpath(path):  # tworzy scieżke do jsona
     json_path = os.path.join(path, json_name)
     return json_path
 
+def generate_detected_pollutions(image_size, detected_results):
+    '''
+    "detected_pollutions": { - zanieczyszczenia wykryte automatycznie przez system
+                    "pollution_1" : {
+                        "pollution_type": "kod lub nazwa zanieczyszczenia 1",
+                        "location_rectangle": [
+                            100,
+                            100,
+                            120,
+                            120
+                        ],
+                        "confusion_value": "true_positive"
+                    },
+                    "pollution_2" : {
+                        "pollution_type": "kod lub nazwa zanieczyszczenia 2",
+                        "location_rectangle": [
+                            200,
+                            200,
+                            220,
+                            220
+                        ],
+                        "confusion_value": "false_positive"
+                    }
+                },
+    '''
+    detected_pollutions = []
+    if detected_results == True:
+        pollution_start_point = (0, 0)
+        pollution_end_point = (image_size[0], image_size[1])
+        pollution = {'type': "Pollution", 
+                    'location_rectangle': (pollution_start_point, pollution_end_point),
+                    'confusion_value': None}
+        detected_pollutions.append(pollution)
+    return detected_pollutions
 
-def main():
-    path, meat_name = changing_dir_meat()  # nazwa mięsa oraz
-    pathog = path  # ścieżka główna, która się nie zmienia
-    lines = dir_list(path)  # lista linii
-    total_lines = dir_counter(path)  # liczba folderów z linią
-    line = 0  # potrzebne do chodzenia po listach
-    photo = 0
-    test = 0
+def generate_label_data(image_size, meat_type):
+    '''
+    "label_data": { - etykieta, która musi być dodana przez człowieka (przez nas), oraz uzupełniona przez system detekcji (patrz dalej)
+        "conveyor_type": 1, - rodzaj taśmociągu
+        "meat_type": "kod lub nazwa miesa", - nazwa mięsa zgodna z całym projektem,
+        "pollutions": { - lista wskazanych przez człowieka zanieczyszczeń,
+            "pollution_1" : {
+                "pollution_type": "kod lub nazwa zanieczyszczenia 1",
+                "location_rectangle": [ - to może być na razie niewypełniowe, ale lepiej jakby już teraz było wpisywane
+                    100, - cztery współrzędne opisujące prostokąt zawierający wewnątrz zanieczyszczenie, wg. standardu OpenCv
+                    100,
+                    120,
+                    120
+                ],
+                "confusion_value": "false_negative"
+            },
+            "pollution_2" : {
+                "pollution_type": "kod lub nazwa zanieczyszczenia 2",
+                "location_rectangle": [
+                    200,
+                    200,
+                    220,
+                    220
+                ],
+                "confusion_value": None
+            }
+        }
+    },
+    '''
+
+    label_data = {'conveyor_type': 1,
+                  'meat_type': meat_type,
+                  'pollutions': []}
+
+    global p
+    if pollution_database[p] != "No pollution":
+        pollution_start_point = (0, 0)
+        pollution_end_point = (image_size[0], image_size[1])
+        
+        pollution = {'type': pollution_database[p], 
+                    'location_rectangle': (pollution_start_point, pollution_end_point),
+                    'confusion_value': None}
+        label_data['pollutions'].append(pollution)
+
+    return label_data
+
+def add_label_data(image_description, image_size, meat_type):
+    label_data = generate_label_data(image_size, meat_type)
+    image_description['label_data'] = label_data
+
+def add_detected_pollutions(image_description, image_size, detected_results):
+    detected_pollutions = generate_detected_pollutions(image_size, detected_results)
+    image_description['detected_pollutions'] = detected_pollutions
+
+def review_data_from_pickles(meat_type):
+    series_path_list = get_series_path_list(meat_type)
+    for series_path in series_path_list:
+        series_metadata_file_path = os.path.join(series_path[0], 'series_metadata.json')
+        with open(series_metadata_file_path, 'r') as file:
+            series_description = json.load(file)
+        series_meta_data = series_description['meta_data']
+        series_image_data = series_meta_data['image_meta_data']
+        for i in range(0, len(series_image_data), 10):
+            image_key = 'ogx_image_' + str(i)
+            pickle_image_path = os.path.join(series_path[0], 'images', image_key + '.pkl')
+            if os.path.exists(pickle_image_path):
+                with open(pickle_image_path, "rb") as image_file: #todo use OGXImage.from_pickle(pickle_image_path)  
+                    ogx_image = pickle.load(image_file) 
+                #todo update pickle path in ogx_image
+                image = ogx_image._image_data
+                image_size = image.shape
+                cv.imshow("iamge", cv.resize(image, (512, 512)) )
+                results_image_path = os.path.join(series_path[1], str(i//10+1), 'result.jpg')
+                print(pickle_image_path)
+                print(results_image_path)
+                results_image = cv.imread(results_image_path)
+                cv.imshow("results_image", cv.resize(results_image, (512, 512)) )
+                key = cv.waitKey(0)
+                add_label_data(series_description['meta_data']['image_meta_data'][image_key], image_size, meat_type)
+                add_detected_pollutions(series_description['meta_data']['image_meta_data'][image_key], image_size, detected_results)
+        # save labelled series json 
+        series_labelled_file_path = os.path.join(series_path[0], 'series_lebelled_metadata.json')
+        with open(series_labelled_file_path, 'w') as labelled_file:
+            json.dump(series_description, labelled_file, indent=4,sort_keys=True)
+
+def gui_control(base_image, results_image, detected_results, max_i, max_p):
     color = (255, 0, 0)
     font = cv.FONT_HERSHEY_SIMPLEX
-    while True:
-        path = os.path.join(pathog, lines[line], meat_name)
-        tests = dir_list(path)
-        total_tests = dir_counter(path)
-        path1 = path  # pomocnicza do cofania
-        path = os.path.join(path, tests[test], '0')
-        photos = dir_list(path)
-        photos.sort(key=int)
-        total_photo = dir_counter(path)
-        result_name = os.path.join(path, photos[photo], 'result.jpg')
-        with open(jsonpath(os.path.join(path, photos[photo]))) as file:
-            results_data = json.load(file)
-        if os.path.exists(file_number_changer(4, os.path.join(path, photos[photo]))):
-            image_name0 = file_number_changer(4, os.path.join(path, photos[photo]))
-        else:
-            image_name0 = file_number_changer(2, os.path.join(path, photos[photo]))
-        image0 = cv.imread(image_name0)
-        result = cv.imread(result_name)
-        Hori = np.concatenate((image0, result), axis=1)  # łączyobrazki
-        results = results_data["count"]
-        cv.namedWindow("window", cv.WND_PROP_FULLSCREEN)
-        cv.setWindowProperty("window", cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
-        cv.putText(Hori, f"Pollution : {results}", (1000, 20), font, 0.5, color, 1)
-        cv.imshow('window', Hori)
 
-        key = cv.waitKey(1)
+    # cv.imshow("base_iamge", cv.resize(base_image, (512, 512)) )
+    # cv.imshow("results_image", cv.resize(results_image, (512, 512)) )
+    concaterated_image = np.concatenate((base_image, results_image), axis=1)
+    cv.namedWindow("window")#, cv.WND_PROP_FULLSCREEN)
+    # cv.setWindowProperty("window", cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
+    cv.putText(concaterated_image, f"Detected pollution : {detected_results}", (900, 20), font, 0.5, color, 1)
+    
+    global p
+    cv.putText(concaterated_image, f"Labelled pollution : {pollution_database[p]}", (900, 40), font, 0.5, color, 1)
+    
+    cv.imshow('window', concaterated_image)
 
-        if key == ord('p'):
-            input_box()
+    key = cv.waitKey(0)
 
-        elif key == ord('d'):
-            photo = photo + 1
-            if photo == total_photo:
-                photo = 0
-                test += 1
-            if test == total_tests:
-                line += 1
-                test = 0
-            if line == total_lines:
-                print("koniec zdjec")
+    global i
+
+    if key == ord('j'):
+        p -= 1
+        if p < 0:
+            p = max_p - 1
+    if key == ord('l'):
+        p += 1
+        if p >= max_p:
+            p = 0
+    elif key == ord('d'):
+        i += 10
+        if i >= max_i:
+            print("koniec zdjec")
+            return True
+    elif key == ord('a'):
+        i -= 10
+        if i < 0:
+            i = 0
+    elif key == 27:
+        return True
+    
+    return False
+
+def review_data_from_results(meat_type):
+    series_path_list = get_series_path_list(meat_type)
+    for series_path in series_path_list:
+        series_metadata_file_path = os.path.join(series_path[0], 'series_metadata.json')
+        with open(series_metadata_file_path, 'r') as file:
+            series_description = json.load(file)
+        
+        series_labelled_metadata = {}
+
+        series_meta_data = series_description['meta_data']
+        series_image_data = series_meta_data['image_meta_data']
+
+        global p # pollution index
+        p = 0
+
+        global i # image index
+        i = 0
+        max_i = (len(series_image_data)//10)*10
+        while True:
+        # for i in range(0, len(series_image_data), 10):
+            image_key = 'ogx_image_' + str(i)
+            pickle_image_path = os.path.join(series_path[0], 'images', image_key + '.pkl')
+            print(pickle_image_path)
+            series_description['meta_data']['image_meta_data'][image_key]['pickle_path'] = pickle_image_path #update pickle_path
+            
+            results_folder_number = i//10+1
+            
+            base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_0.jpg')          
+            print(base_image_path)
+            base_image = cv.imread(base_image_path) 
+
+            results_image_path = os.path.join(series_path[1], str(results_folder_number), 'result.jpg')          
+            print(results_image_path)
+            results_image = cv.imread(results_image_path)
+
+            detected_results_path = os.path.join(series_path[1], str(results_folder_number), 'data.json')  
+            with open(detected_results_path) as detected_results_file:
+                detected_results_data = json.load(detected_results_file)
+            detected_results = detected_results_data["count"]
+            
+            prev_i = i
+            is_brake = gui_control(base_image, results_image, detected_results, max_i, len(pollution_database))
+            
+            #add new entry
+            new_entry_name = 'result_' + str(results_folder_number)
+            series_labelled_metadata[new_entry_name] = {}
+
+            # add all base images wrt result to metadata info
+            image_set_metadata = {}
+            for j in range((prev_i//10)*10 + 0, (prev_i//10)*10 + 10):
+                image_key_j = 'ogx_image_' + str(j)
+                pickle_image_path_j = os.path.join(series_path[0], 'images', image_key_j + '.pkl')
+                print(pickle_image_path_j)
+                image_set_metadata[image_key_j] = series_description['meta_data']['image_meta_data'][image_key_j]
+            series_labelled_metadata[new_entry_name]['image_set_metadata'] = image_set_metadata
+
+            image_size = base_image.shape
+            add_label_data(series_labelled_metadata[new_entry_name], image_size, meat_type)
+            add_detected_pollutions(series_labelled_metadata[new_entry_name], image_size, detected_results)
+            print('added label data and detected pollutions')
+            
+            if is_brake:
+                # save labelled series json 
+                series_labelled_file_path = os.path.join(series_path[1], 'series_labelled_metadata.json')
+                with open(series_labelled_file_path, 'w') as labelled_file:
+                    json.dump(series_labelled_metadata, labelled_file, indent=4,sort_keys=True)
                 break
-        elif key == ord('a'):
-            photo = photo - 1
-            if photo == -1:
-                test = test - 1
-                path1 = os.path.join(path1, tests[test], '0')
-                total_photo = dir_counter(path1)
-                photo = total_photo - 1
-                if test == -1:
-                    line = line - 1
-                    if line == -1:
-                        print("Koniec foteczek")
-                        break
-                    path2 = os.path.join(pathog, lines[line], meat_name)
-                    total_tests = dir_counter(path2)
-                    test = total_tests - 1
-                    path3 = os.path.join(path2, tests[test], '0')
-                    total_photo = dir_counter(path3)
-                    photo = total_photo - 1
 
-        elif key == 27:
-            break
-
+def main():
+    meat_type = 'nerka_wieprzowa'
+    # review_data_from_pickles(meat_type)
+    review_data_from_results(meat_type)
     cv.destroyAllWindows()
-
 
 if __name__ == "__main__":
     main()
