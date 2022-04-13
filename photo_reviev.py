@@ -155,31 +155,6 @@ def detected_is_inside_labelled_pollution(labelled_pollution, results_image):
     return len(values) > 0
 
 def generate_detected_pollutions(image_size, detected_results, results_image):
-    '''
-    "detected_pollutions": { - zanieczyszczenia wykryte automatycznie przez system
-                    "pollution_1" : {
-                        "pollution_type": "kod lub nazwa zanieczyszczenia 1",
-                        "location_rectangle": [
-                            100,
-                            100,
-                            120,
-                            120
-                        ],
-                        "confusion_value": "true_positive"
-                    },
-                    "pollution_2" : {
-                        "pollution_type": "kod lub nazwa zanieczyszczenia 2",
-                        "location_rectangle": [
-                            200,
-                            200,
-                            220,
-                            220
-                        ],
-                        "confusion_value": "false_positive"
-                    }
-                },
-    '''
-    
     global labelled_pollutions
     detected_pollutions = []
 
@@ -229,35 +204,6 @@ def add_pollution(pollution_index, pollution_start_point, pollution_end_point):
         labelled_pollutions.append(pollution)
 
 def generate_label_data(meat_type):
-    '''
-    "label_data": { - etykieta, która musi być dodana przez człowieka (przez nas), oraz uzupełniona przez system detekcji (patrz dalej)
-        "conveyor_type": 1, - rodzaj taśmociągu
-        "meat_type": "kod lub nazwa miesa", - nazwa mięsa zgodna z całym projektem,
-        "pollutions": { - lista wskazanych przez człowieka zanieczyszczeń,
-            "pollution_1" : {
-                "pollution_type": "kod lub nazwa zanieczyszczenia 1",
-                "location_rectangle": [ - to może być na razie niewypełniowe, ale lepiej jakby już teraz było wpisywane
-                    100, - cztery współrzędne opisujące prostokąt zawierający wewnątrz zanieczyszczenie, wg. standardu OpenCv
-                    100,
-                    120,
-                    120
-                ],
-                "confusion_value": "false_negative"
-            },
-            "pollution_2" : {
-                "pollution_type": "kod lub nazwa zanieczyszczenia 2",
-                "location_rectangle": [
-                    200,
-                    200,
-                    220,
-                    220
-                ],
-                "confusion_value": None
-            }
-        }
-    },
-    '''
-
     global labelled_pollutions
     label_data = {'conveyor_type': 1,
                   'meat_type': meat_type,
@@ -313,13 +259,14 @@ def mark_pollution(event,x,y,flags,param):
     elif event == cv.EVENT_LBUTTONUP:
         refPt.append((x, y))
         cropping = False
-        # draw a rectangle around the region of interest
-        cv.rectangle(concaterated_image, refPt[0], refPt[1], (0, 255, 0), 2)
+        current_pollutions_color = (0, 255, 0)
+        cv.rectangle(concaterated_image, refPt[0], refPt[1], current_pollutions_color, 2)
         add_pollution(p, refPt[0], refPt[1])
         cv.imshow('window', concaterated_image)
 
 def gui_control(base_image, results_image, detected_results, max_i, max_p):
-    color = (255, 0, 0)
+    detected_pollutions_color = (255, 0, 0)
+    current_pollutions_color = (0, 255, 0)
     font = cv.FONT_HERSHEY_SIMPLEX
 
     global concaterated_image
@@ -329,14 +276,19 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
     cv.namedWindow("window")#, cv.WND_PROP_FULLSCREEN)
 
     cv.setMouseCallback('window', mark_pollution)
-    cv.putText(concaterated_image, f"Detected pollution : {detected_results}", (900, 20), font, 0.5, color, 1)
+    cv.putText(concaterated_image, f"Detected pollution : {detected_results}", (900, 20), font, 0.5, detected_pollutions_color, 1)
     global p 
-    cv.putText(concaterated_image, f"Current pollution : {pollution_database[p]}", (900, 40), font, 0.5, color, 1)
+    cv.putText(concaterated_image, f"Current pollution : {pollution_database[p]}", (900, 40), font, 0.5, current_pollutions_color, 1)
     
     global labelled_pollutions
     for lpi in range(0, len(labelled_pollutions)):
+        previous_pollutions_color = (0, 255, 255)
         labelled_pollution = labelled_pollutions[lpi]
-        cv.putText(concaterated_image, f"Labelled pollution : {labelled_pollution['pollution_type']}", (900, 60 + 20*lpi), font, 0.5, color, 1)
+        cv.putText(concaterated_image, f"Labelled pollution : {labelled_pollution['type']}", (900, 60 + 20*lpi), font, 0.5, previous_pollutions_color, 1)
+        labelled_pollution_location_rectangle = labelled_pollution['location_rectangle'] 
+        pollution_start_point = labelled_pollution_location_rectangle[0]
+        pollution_end_point = labelled_pollution_location_rectangle[1]
+        cv.rectangle(concaterated_image, pollution_start_point, pollution_end_point, previous_pollutions_color, 2)
     
     cv.imshow('window', concaterated_image)
 
@@ -381,7 +333,8 @@ def review_data_from_results(meat_type):
         global p # pollution index
         p = 0
 
-        global i # image index
+        global i, prev_i # image index
+        prev_i = -1
         i = 0
         max_i = (len(series_image_data)//10)*10
         while True:
@@ -389,9 +342,6 @@ def review_data_from_results(meat_type):
             global refPt, cropping
             refPt = []
             cropping = False
-
-            global labelled_pollutions
-            labelled_pollutions = []
 
             image_key = 'ogx_image_' + str(i)
             pickle_image_path = os.path.join(series_path[0], 'images', image_key + '.pkl')
@@ -413,6 +363,10 @@ def review_data_from_results(meat_type):
                 detected_results_data = json.load(detected_results_file)
             detected_results = detected_results_data["count"]
             
+            global labelled_pollutions
+            if prev_i != i:
+                labelled_pollutions = []
+
             prev_i = i
             is_brake = gui_control(base_image, results_image, detected_results, max_i, len(pollution_database))
             
