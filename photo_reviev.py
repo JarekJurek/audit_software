@@ -12,15 +12,14 @@ from pkg_resources import add_activation_listener
 pollution_name = "empty"
 
 pollution_database =  [ "No pollution",
-                        "False positive",
                         "Zielony",
                         "Niebieski",
                         "Czarny",
-                        "Biały",
+                        "Bialy",
                         "Szary",
                         "Czerwony",
-                        "Żółty",
-                        "Pomarańczowy" ]
+                        "Zolty",
+                        "Pomaranczowy" ]
 
 def input_box():
     root = tk.Tk()

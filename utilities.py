@@ -1,15 +1,28 @@
 import os
 
+
+pollution_database =  [ "No pollution",
+                        "Zielony",
+                        "Niebieski",
+                        "Czarny",
+                        "Bialy",
+                        "Szary",
+                        "Czerwony",
+                        "Zolty",
+                        "Pomaranczowy" ]
+
 def dir_list(path):  # ma zwracać listę folderów w folderze
     list = os.listdir(path)
     return list
-    
-def get_series_path_list(meat_name):
+
+def get_series_path_list(meat_name, data_path_main):
     series_path_list = []
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
         meat_name = meat_name.strip()
-    data_path_main = 'C:\\Users\\Janki\\Projects\\agromaks\\data'  # początek ścieżki absolutnej
+    if data_path_main is None:
+        data_path_main = input('Podaj sciezke do katalogu z danymi')
+        data_path_main = data_path_main.strip()
     linia_path_main = os.path.join(data_path_main, meat_name, 'data')
     linia_paths = dir_list(linia_path_main)
     for linia_path in linia_paths:
