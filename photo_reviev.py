@@ -209,6 +209,8 @@ def generate_detected_pollutions(image_size, detected_results, results_image):
         pollution = {'type': pollution_database[0], #no pollution 
                     'location_rectangle': (pollution_start_point, pollution_end_point),
                     'confusion_value': "True negative"}
+        detected_pollutions.append(pollution)
+
     elif len(labelled_pollutions) > 0 and detected_results == False:
         # False negative
         for labelled_pollution in labelled_pollutions:
@@ -424,7 +426,7 @@ def review_data_from_results(meat_type):
             for j in range((prev_i//10)*10 + 0, (prev_i//10)*10 + 10):
                 image_key_j = 'ogx_image_' + str(j)
                 pickle_image_path_j = os.path.join(series_path[0], 'images', image_key_j + '.pkl')
-                print(pickle_image_path_j)
+                # print(pickle_image_path_j)
                 image_set_metadata[image_key_j] = series_description['meta_data']['image_meta_data'][image_key_j]
             series_labelled_metadata[new_entry_name]['image_set_metadata'] = image_set_metadata
 
@@ -438,6 +440,7 @@ def review_data_from_results(meat_type):
                 series_labelled_file_path = os.path.join(series_path[1], 'series_labelled_metadata.json')
                 with open(series_labelled_file_path, 'w') as labelled_file:
                     json.dump(series_labelled_metadata, labelled_file, indent=4,sort_keys=True)
+                    print('dumped results to ' + series_labelled_file_path)
                 break
 
 # def config_gui():
