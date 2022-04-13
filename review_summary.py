@@ -10,12 +10,21 @@ def main():
     data_path_main = 'C:\\Users\\Janki\\Projects\\agromaks\\data'  # początek ścieżki absolutnej
 
     pollutions_summary = {}
+
+    # meat_type_pollutions_summary = {}
+    # for pollution_type in pollution_database:
+    #     meat_type_pollutions_summary[pollution_type] = {}
+    #     meat_type_pollutions_summary[pollution_type]['True positive'] = 0
+    #     meat_type_pollutions_summary[pollution_type]['True negative'] = 0
+    #     meat_type_pollutions_summary[pollution_type]['False positive'] = 0
+    #     meat_type_pollutions_summary[pollution_type]['False negative'] = 0
+    # pollutions_summary['Nerka_wieprzowa'] = meat_type_pollutions_summary
     
     meat_types = dir_list(data_path_main)
     for meat_type in meat_types:
 
         if os.path.isdir(os.path.join(data_path_main, meat_type)):      
-            
+
             meat_type_pollutions_summary = {}
             for pollution_type in pollution_database:
                 meat_type_pollutions_summary[pollution_type] = {}
@@ -35,14 +44,14 @@ def main():
                         slm_key = 'result_' + str(slm_index)
                         detected_pollutions = series_labelled_metadata[slm_key]["detected_pollutions"]
                         for detected_pollution in detected_pollutions:
-                            convusion_value = detected_pollution['confusion_value']
+                            confusion_value = detected_pollution['confusion_value']
                             pollution_type = detected_pollution['type']
-                            meat_type_pollutions_summary[pollution_type][convusion_value] += 1
+                            meat_type_pollutions_summary[pollution_type][confusion_value] += 1
             
                     if meat_type in pollutions_summary:
                         for pollution_type in meat_type_pollutions_summary:
-                            for convusion_value in pollution_type['confusion_value']:
-                                pollutions_summary[meat_type][pollution_type][convusion_value] += meat_type_pollutions_summary[pollution_type][convusion_value]
+                            for confusion_value in meat_type_pollutions_summary[pollution_type]:
+                                pollutions_summary[meat_type][pollution_type][confusion_value] += meat_type_pollutions_summary[pollution_type][confusion_value]
                     else:
                         pollutions_summary[meat_type] = meat_type_pollutions_summary
 
