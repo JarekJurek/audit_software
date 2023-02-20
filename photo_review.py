@@ -9,8 +9,6 @@ import tkinter as tk
 from pkg_resources import add_activation_listener
 # import OGXImage
 
-data_path_main = 'C:\\Users\\linnia1\\Desktop\\test_02_22'  # początek ścieżki absolutnej
-
 pollution_name = "empty"
 
 pollution_database =  [ "No pollution",
@@ -95,7 +93,7 @@ def input_box():
     root.mainloop()
 
 
-def changing_dir_meat(meat_name):  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
+def changing_dir_meat(data_path_main, meat_name):  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
         meat_name = meat_name.strip()
@@ -104,7 +102,7 @@ def changing_dir_meat(meat_name):  # zmienia ścieżkę w zależności od mięsa
     os.chdir(path)
     return path, meat_name
 
-def get_series_path_list(meat_name):
+def get_series_path_list(data_path_main, meat_name):
     series_path_list = []
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
@@ -328,8 +326,8 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
     
     return False
 
-def review_data_from_results(meat_type):
-    series_path_list = get_series_path_list(meat_type)
+def review_data_from_results(data_path_main, meat_type):
+    series_path_list = get_series_path_list(data_path_main, meat_type)
     for series_path in series_path_list:
         series_metadata_file_path = os.path.join(series_path[0], 'series_metadata.json')
         with open(series_metadata_file_path, 'r') as file:
@@ -413,9 +411,10 @@ def review_data_from_results(meat_type):
 
 def main():
     # config_gui()
+    data_path_main = 'C:\\Users\\linnia1\\Desktop\\test_02_22'  # początek ścieżki absolutnej
     meat_type = 'Nerka wieprzowa'
     # review_data_from_pickles(meat_type)
-    review_data_from_results(meat_type)
+    review_data_from_results(data_path_main, meat_type)
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
