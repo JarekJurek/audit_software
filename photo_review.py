@@ -9,6 +9,8 @@ import tkinter as tk
 from pkg_resources import add_activation_listener
 # import OGXImage
 
+data_path_main = 'C:\\Users\\linnia1\\Desktop\\test_02_22'  # początek ścieżki absolutnej
+
 pollution_name = "empty"
 
 pollution_database =  [ "No pollution",
@@ -97,8 +99,8 @@ def changing_dir_meat(meat_name):  # zmienia ścieżkę w zależności od mięsa
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
         meat_name = meat_name.strip()
-    path_main = 'C:\\Users\\Janki\\Projects\\agromaks\\data'  # początek ścieżki absolutnej
-    path = os.path.join(path_main, meat_name, 'results')
+    # path_main = 'C:\\Users\\Janki\\Projects\\agromaks\\data'  # początek ścieżki absolutnej
+    path = os.path.join(data_path_main, meat_name, 'results')
     os.chdir(path)
     return path, meat_name
 
@@ -107,7 +109,7 @@ def get_series_path_list(meat_name):
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
         meat_name = meat_name.strip()
-    data_path_main = 'C:\\Users\\Janki\\Projects\\agromaks\\data'  # początek ścieżki absolutnej
+    data_path_main = 'C:\\Users\\linnia1\\Desktop\\test_02_22\\'  # początek ścieżki absolutnej
     linia_path_main = os.path.join(data_path_main, meat_name, 'data')
     linia_paths = dir_list(linia_path_main)
     for linia_path in linia_paths:
@@ -272,6 +274,14 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
     global concaterated_image
     # cv.imshow("base_iamge", cv.resize(base_image, (512, 512)) )
     # cv.imshow("results_image", cv.resize(results_image, (512, 512)) )
+
+    if results_image.shape[0] < base_image.shape[0] and results_image.shape[1] < base_image.shape[1]:
+        value = [0, 0, 0]
+        top = int((base_image.shape[0] - results_image.shape[0])/2)
+        bottom = top
+        left = int((base_image.shape[1] - results_image.shape[1])/2)
+        right = left
+        results_image = cv.copyMakeBorder(results_image, top, bottom, left, right, cv.BORDER_CONSTANT, None, value)
     concaterated_image = np.concatenate((base_image, results_image), axis=1)
     cv.namedWindow("window")#, cv.WND_PROP_FULLSCREEN)
 
@@ -296,20 +306,20 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
 
     global i
 
-    if key == ord('j'):
+    if key == ord('j'):# choose pollution type
         p -= 1
         if p < 0:
             p = max_p - 1
-    if key == ord('l'):
+    if key == ord('l'):# choose pollution type
         p += 1
         if p >= max_p:
             p = 0
-    elif key == ord('d'):
+    elif key == ord('d'):# choose image
         i += 10
         if i >= max_i:
             print("koniec zdjec")
             return True
-    elif key == ord('a'):
+    elif key == ord('a'):# choose image
         i -= 10
         if i < 0:
             i = 0
@@ -354,7 +364,7 @@ def review_data_from_results(meat_type):
             print(base_image_path)
             base_image = cv.imread(base_image_path) 
 
-            results_image_path = os.path.join(series_path[1], str(results_folder_number), 'result.jpg')          
+            results_image_path = os.path.join(series_path[1], str(results_folder_number), 'result_clean.jpg')
             print(results_image_path)
             results_image = cv.imread(results_image_path)
 
@@ -403,7 +413,7 @@ def review_data_from_results(meat_type):
 
 def main():
     # config_gui()
-    meat_type = 'nerka_wieprzowa'
+    meat_type = 'Nerka wieprzowa'
     # review_data_from_pickles(meat_type)
     review_data_from_results(meat_type)
     cv.destroyAllWindows()
