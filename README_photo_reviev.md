@@ -22,3 +22,10 @@ meat_type = 'Nerka wieprzowa'
 series_labelled_metadata.json
 
 w katalogu 'results' odpowiedniej serii testowej.
+
+## Istotne funkcje
+1. review_data_from_results - główna funkcja iterująca po odpowiednich zdjęciach, uruchamiająca gui do zaznaczania etykiet zanieczyszczeń i zapisująca wyniki do series_labelled_metadata.json
+2. gui_control - funkcja zarządzająca przeglądaniem zdjęć i zaznaczaniem etykiet zanieczyszczeń za pomocą gui (klawiatura i mysz) 
+3. add_all_base_images, add_labelled_pollutions, add_detected_pollutions - zestaw funkcji do generowania etykiet w postaci słowika
+4. save_series_labelled_metadata - funkcja zapisująca etykietowane wyniki do pliku series_labelled_metadata.json
+5. generate_detected_pollutions - funkcja porównująca zaznaczone etykiety z wynikami działania systemu detekcji i oznaczająca jakość działania systemu (confusion_value) dla wybranego zdjęcia jako: "False positive", "True positive", "False negative" lub "True negative"  

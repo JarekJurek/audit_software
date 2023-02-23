@@ -154,6 +154,18 @@ def detected_is_inside_labelled_pollution(labelled_pollution, results_image):
     values = np.where((labelled_pollution_results_image == (255,255,255)).all(axis=2))
     return len(values) > 0
 
+# are there any detected pollutions outside all labbeled pollution
+def is_any_detected_pollution_outside_all_labbeled_pollutions(results_image):
+    # delete_pollutions_inside_labbeled_pollutions
+    results_labbeled_cleared = results_image.copy()
+    for labelled_pollution in labelled_pollutions:
+        # paint black filled rectangle on results_labbeled_cleared - clear results in labbeled pollution aera
+        labelled_pollution_location_rectangle = labelled_pollution['location_rectangle']
+        cv.rectangle(results_labbeled_cleared, labelled_pollution_location_rectangle[0], labelled_pollution_location_rectangle[1], (0, 0, 0), -1)
+    # count remaining pollutions
+    values = np.where((results_labbeled_cleared == (255, 255, 255)).all(axis=2))
+    return len(values) > 0
+
 def generate_detected_pollutions(image_size, detected_results, results_image):
     global labelled_pollutions
     detected_pollutions = []
@@ -175,6 +187,14 @@ def generate_detected_pollutions(image_size, detected_results, results_image):
             else:
                 detected_pollution['confusion_value'] = "False negative"
             detected_pollutions.append(detected_pollution)
+        if is_any_detected_pollution_outside_all_labbeled_pollutions(results_image):
+            # False positive
+            pollution_start_point = (0, 0)
+            pollution_end_point = (image_size[0], image_size[1])
+            pollution = {'type': pollution_database[0],  # no pollution
+                         'location_rectangle': (pollution_start_point, pollution_end_point),
+                         'confusion_value': "False positive"}
+            detected_pollutions.append(pollution)
 
     elif len(labelled_pollutions) == 0 and detected_results == False:
         # True negative
@@ -211,44 +231,13 @@ def generate_label_data(meat_type):
 
     return label_data
 
-def add_label_data(image_description, meat_type):
+def add_labelled_pollutions(labbeled_image_description, meat_type):
     label_data = generate_label_data(meat_type)
-    image_description['label_data'] = label_data
+    labbeled_image_description['label_data'] = label_data
 
-def add_detected_pollutions(image_description, image_size, detected_results, results_image):
+def add_detected_pollutions(labbeled_image_description, image_size, detected_results, results_image):
     detected_pollutions = generate_detected_pollutions(image_size, detected_results, results_image)
-    image_description['detected_pollutions'] = detected_pollutions
-
-# def review_data_from_pickles(meat_type):
-#     series_path_list = get_series_path_list(meat_type)
-#     for series_path in series_path_list:
-#         series_metadata_file_path = os.path.join(series_path[0], 'series_metadata.json')
-#         with open(series_metadata_file_path, 'r') as file:
-#             series_description = json.load(file)
-#         series_meta_data = series_description['meta_data']
-#         series_image_data = series_meta_data['image_meta_data']
-#         for i in range(0, len(series_image_data), 10):
-#             image_key = 'ogx_image_' + str(i)
-#             pickle_image_path = os.path.join(series_path[0], 'images', image_key + '.pkl')
-#             if os.path.exists(pickle_image_path):
-#                 with open(pickle_image_path, "rb") as image_file: #todo use OGXImage.from_pickle(pickle_image_path)  
-#                     ogx_image = pickle.load(image_file) 
-#                 #todo update pickle path in ogx_image
-#                 image = ogx_image._image_data
-#                 image_size = image.shape
-#                 cv.imshow("iamge", cv.resize(image, (512, 512)) )
-#                 results_image_path = os.path.join(series_path[1], str(i//10+1), 'result.jpg')
-#                 print(pickle_image_path)
-#                 print(results_image_path)
-#                 results_image = cv.imread(results_image_path)
-#                 cv.imshow("results_image", cv.resize(results_image, (512, 512)) )
-#                 key = cv.waitKey(0)
-#                 add_label_data(series_description['meta_data']['image_meta_data'][image_key], meat_type)
-#                 add_detected_pollutions(series_description['meta_data']['image_meta_data'][image_key], image_size, detected_results)
-#         # save labelled series json 
-#         series_labelled_file_path = os.path.join(series_path[0], 'series_lebelled_metadata.json')
-#         with open(series_labelled_file_path, 'w') as labelled_file:
-#             json.dump(series_description, labelled_file, indent=4,sort_keys=True)
+    labbeled_image_description['detected_pollutions'] = detected_pollutions
 
 # mouse callback function
 def mark_pollution(event,x,y,flags,param):
@@ -265,11 +254,21 @@ def mark_pollution(event,x,y,flags,param):
         cv.imshow('window', concaterated_image)
 
 def gui_control(base_image, results_image, detected_results, max_i, max_p):
+    # init global variables for gui_control
+    global refPt, prev_i, i, labelled_pollutions, p, concaterated_image, cropping
+    refPt = []
+    cropping = False
+
+    if prev_i != i:
+        labelled_pollutions = []
+
+    prev_i = i
+
+    # init text info font
     detected_pollutions_color = (255, 0, 0)
     current_pollutions_color = (0, 255, 0)
     font = cv.FONT_HERSHEY_SIMPLEX
 
-    global concaterated_image
     # cv.imshow("base_iamge", cv.resize(base_image, (512, 512)) )
     # cv.imshow("results_image", cv.resize(results_image, (512, 512)) )
 
@@ -285,10 +284,8 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
 
     cv.setMouseCallback('window', mark_pollution)
     cv.putText(concaterated_image, f"Detected pollution : {detected_results}", (900, 20), font, 0.5, detected_pollutions_color, 1)
-    global p 
     cv.putText(concaterated_image, f"Current pollution : {pollution_database[p]}", (900, 40), font, 0.5, current_pollutions_color, 1)
-    
-    global labelled_pollutions
+
     for lpi in range(0, len(labelled_pollutions)):
         previous_pollutions_color = (0, 255, 255)
         labelled_pollution = labelled_pollutions[lpi]
@@ -301,8 +298,6 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
     cv.imshow('window', concaterated_image)
 
     key = cv.waitKey(0)
-
-    global i
 
     if key == ord('j'):# choose pollution type
         p -= 1
@@ -326,38 +321,95 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
     
     return False
 
+def init_global_indexes():
+    # init pollution index
+    global p  # pollution index
+    p = 0
+
+    # init image index
+    global i, prev_i  # image index
+    prev_i = -1
+    i = 0
+
+    return
+
+def load_one_series_description(series_path):
+    series_metadata_file_path = os.path.join(series_path[0], 'series_metadata.json')
+    with open(series_metadata_file_path, 'r') as file:
+        series_description = json.load(file)
+    return series_description
+
+def load_one_series_metadata(series_description):
+    series_meta_data = series_description['meta_data']
+    return series_meta_data
+
+def load_one_series_image_data(series_meta_data):
+    series_image_data = series_meta_data['image_meta_data']
+    return series_image_data
+
+def get_images_index_max(series_image_data):
+    # to analyse one pollution visual detection system records 10 images
+    return (len(series_image_data)//10)*10
+
+def update_series_description_pickle_path(series_description,series_path, image_key):
+    pickle_image_path = os.path.join(series_path[0], 'images', image_key + '.pkl')
+    print(pickle_image_path)
+    series_description['meta_data']['image_meta_data'][image_key]['pickle_path'] = pickle_image_path  # update pickle_path
+    return
+
+def get_detected_pollutions_pixels_count(series_path, results_folder_number):
+    detected_results_path = os.path.join(series_path[1], str(results_folder_number), 'data.json')
+    with open(detected_results_path) as detected_results_file:
+        detected_results_data = json.load(detected_results_file)
+    detected_pollutions_pixels_count = detected_results_data["count"]
+    return detected_pollutions_pixels_count
+
+def add_all_base_images(labbeled_image_description, series_image_data):
+    global prev_i
+    # add all base images wrt result to metadata info
+    base_image_set_metadata = {}
+    for j in range((prev_i // 10) * 10 + 0, (prev_i // 10) * 10 + 10):
+        image_key_j = 'ogx_image_' + str(j)
+        # update pickle path?
+        # pickle_image_path_j = os.path.join(series_path[0], 'images', image_key_j + '.pkl')
+        # print(pickle_image_path_j)
+        base_image_set_metadata[image_key_j] = series_image_data[image_key_j]
+    labbeled_image_description['image_set_metadata'] = base_image_set_metadata
+    return
+
+def save_series_labelled_metadata(series_path, series_labelled_metadata):
+    # save labelled series json
+    series_labelled_file_path = os.path.join(series_path[1], 'series_labelled_metadata.json')
+    with open(series_labelled_file_path, 'w') as labelled_file:
+        json.dump(series_labelled_metadata, labelled_file, indent=4, sort_keys=True)
+        print('dumped results to ' + series_labelled_file_path)
+    return
+
 def review_data_from_results(data_path_main, meat_type):
     series_path_list = get_series_path_list(data_path_main, meat_type)
     for series_path in series_path_list:
-        series_metadata_file_path = os.path.join(series_path[0], 'series_metadata.json')
-        with open(series_metadata_file_path, 'r') as file:
-            series_description = json.load(file)
-        
+        # load info from series_metadata.json
+        series_description = load_one_series_description(series_path)
+        series_meta_data = load_one_series_metadata(series_description)
+        series_image_data = load_one_series_image_data(series_meta_data)
+
+        # init series_labelled_metadata
         series_labelled_metadata = {}
 
-        series_meta_data = series_description['meta_data']
-        series_image_data = series_meta_data['image_meta_data']
+        global i
+        init_global_indexes()
 
-        global p # pollution index
-        p = 0
-
-        global i, prev_i # image index
-        prev_i = -1
-        i = 0
-        max_i = (len(series_image_data)//10)*10
+        max_i = get_images_index_max(series_image_data)
         while True:
         # for i in range(0, len(series_image_data), 10):
-            global refPt, cropping
-            refPt = []
-            cropping = False
 
             image_key = 'ogx_image_' + str(i)
-            pickle_image_path = os.path.join(series_path[0], 'images', image_key + '.pkl')
-            print(pickle_image_path)
-            series_description['meta_data']['image_meta_data'][image_key]['pickle_path'] = pickle_image_path #update pickle_path
+
+            update_series_description_pickle_path(series_description, series_path, image_key)
             
             results_folder_number = i//10+1
-            
+
+            # read results images
             base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_0.jpg')          
             print(base_image_path)
             base_image = cv.imread(base_image_path) 
@@ -366,42 +418,26 @@ def review_data_from_results(data_path_main, meat_type):
             print(results_image_path)
             results_image = cv.imread(results_image_path)
 
-            detected_results_path = os.path.join(series_path[1], str(results_folder_number), 'data.json')  
-            with open(detected_results_path) as detected_results_file:
-                detected_results_data = json.load(detected_results_file)
-            detected_results = detected_results_data["count"]
-            
-            global labelled_pollutions
-            if prev_i != i:
-                labelled_pollutions = []
+            detected_pollutions_pixels_count = get_detected_pollutions_pixels_count(series_path, results_folder_number)
 
-            prev_i = i
-            is_brake = gui_control(base_image, results_image, detected_results, max_i, len(pollution_database))
+            is_brake = gui_control(base_image, results_image, detected_pollutions_pixels_count, max_i, len(pollution_database))
             
-            #add new entry
+            # init series_labelled_metadata
             new_entry_name = 'result_' + str(results_folder_number)
             series_labelled_metadata[new_entry_name] = {}
 
-            # add all base images wrt result to metadata info
-            image_set_metadata = {}
-            for j in range((prev_i//10)*10 + 0, (prev_i//10)*10 + 10):
-                image_key_j = 'ogx_image_' + str(j)
-                pickle_image_path_j = os.path.join(series_path[0], 'images', image_key_j + '.pkl')
-                # print(pickle_image_path_j)
-                image_set_metadata[image_key_j] = series_description['meta_data']['image_meta_data'][image_key_j]
-            series_labelled_metadata[new_entry_name]['image_set_metadata'] = image_set_metadata
+            # add all base images wrt result to series_labelled_metadata
+            # 10 base images => one pollution detection
+            add_all_base_images(series_labelled_metadata[new_entry_name], series_image_data)
 
+            # add labbeled by user and detected by detection system pollutions to series_labelled_metadata
             image_size = base_image.shape
-            add_label_data(series_labelled_metadata[new_entry_name], meat_type)
-            add_detected_pollutions(series_labelled_metadata[new_entry_name], image_size, detected_results, results_image)
+            add_labelled_pollutions(series_labelled_metadata[new_entry_name], meat_type)
+            add_detected_pollutions(series_labelled_metadata[new_entry_name], image_size, detected_pollutions_pixels_count, results_image)
             print('added label data and detected pollutions')
             
             if is_brake:
-                # save labelled series json 
-                series_labelled_file_path = os.path.join(series_path[1], 'series_labelled_metadata.json')
-                with open(series_labelled_file_path, 'w') as labelled_file:
-                    json.dump(series_labelled_metadata, labelled_file, indent=4,sort_keys=True)
-                    print('dumped results to ' + series_labelled_file_path)
+                save_series_labelled_metadata(series_path, series_labelled_metadata)
                 break
 
 # def config_gui():
