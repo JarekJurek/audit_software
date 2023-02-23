@@ -11,15 +11,46 @@ from pkg_resources import add_activation_listener
 
 pollution_name = "empty"
 
-pollution_database =  [ "No pollution",
-                        "Zielony",
-                        "Niebieski",
-                        "Czarny",
-                        "Bialy",
-                        "Szary",
-                        "Czerwony",
-                        "Zolty",
-                        "Pomaranczowy" ]
+# Dla Nerka wieprzowa:
+
+pollution_database =  [ "Z/9 - kaptur foliowy niebieski cienki",
+                        "Z/10 - kaptur foliowy niebieski średni",
+                        "Z/11 - kaptur foliowy niebieski gruby",
+                        "Z/19 - plastik  żółty",
+                        "Z/31 - rękawica niebieska bardzo cienka",
+                        "Z/32 - rękawica niebieska cienka",
+                        "Z/33 - rękawica niebieska gruba",
+                        "Z/20 - przekładka piankowa biała",
+                        "Z/29 - rękawica materiałowo gumowa niebiesko czarna",
+                        "Z/1 - drewno z palety jasne",
+                        "Z/2 - drzazgi z palety",
+                        "Z/6 - folia stretch transparentna",
+                        "Z/39 - papier / etykieta" ]
+# Wysoka:
+# Z/9	kaptur foliowy niebieski cienki
+# Z/10	kaptur foliowy niebieski średni
+# Z/11	kaptur foliowy niebieski gruby
+# Z/19	plastik  żółty
+# Z/31	rękawica niebieska bardzo cienka
+# Z/32	rękawica niebieska cienka
+# Z/33	rękawica niebieska gruba
+# Średnia:
+# Z/20	przekładka piankowa biała
+# Z/29	rękawica materiałowo gumowa niebiesko czarna
+# Niska:
+# Z/1	drewno z palety jasne
+# Z/2	drzazgi z palety
+# Z/6	folia stretch transparentna
+# Z/39	papier / etykieta
+# pollution_database =  [ "No pollution",
+#                         "Zielony",
+#                         "Niebieski",
+#                         "Czarny",
+#                         "Bialy",
+#                         "Szary",
+#                         "Czerwony",
+#                         "Zolty",
+#                         "Pomaranczowy" ]
 
 def input_box():
     root = tk.Tk()
