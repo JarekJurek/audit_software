@@ -27,7 +27,7 @@ def main():
     # ...
 
     # check one meat in data_path_main folder
-    meat_type = 'Nerka wieprzowa'
+    meat_type = 'Sledziona wieprzowa'
     if os.path.isdir(os.path.join(data_path_main, meat_type)):
 
         meat_type_pollutions_summary = {}

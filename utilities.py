@@ -1,15 +1,34 @@
 import os
 
+# Dla Nerka wieprzowa:
+# pollution_database =  [ "No pollution",
+#                         "Z/9 - kaptur foliowy niebieski cienki",
+#                         "Z/10 - kaptur foliowy niebieski średni",
+#                         "Z/11 - kaptur foliowy niebieski gruby",
+#                         "Z/19 - plastik  żółty",
+#                         "Z/31 - rękawica niebieska bardzo cienka",
+#                         "Z/32 - rękawica niebieska cienka",
+#                         "Z/33 - rękawica niebieska gruba",
+#                         "Z/20 - przekładka piankowa biała",
+#                         "Z/29 - rękawica materiałowo gumowa niebiesko czarna",
+#                         "Z/1 - drewno z palety jasne",
+#                         "Z/2 - drzazgi z palety",
+#                         "Z/6 - folia stretch transparentna",
+#                         "Z/39 - papier / etykieta" ]
 
+# Dla Sledziona wieprzowa:
 pollution_database =  [ "No pollution",
-                        "Zielony",
-                        "Niebieski",
-                        "Czarny",
-                        "Bialy",
-                        "Szary",
-                        "Czerwony",
-                        "Zolty",
-                        "Pomaranczowy" ]
+                        "Z/9 - kaptur foliowy niebieski cienki",
+                        "Z/10 - kaptur foliowy niebieski średni",
+                        "Z/11 - kaptur foliowy niebieski gruby",
+                        "Z/31 - rękawica niebieska bardzo cienka",
+                        "Z/32 - rękawica niebieska cienka",
+                        "Z/33 - rękawica niebieska gruba",
+                        "Z/14 - plastik czerwony ciemne",
+                        "Z/15 - plastik czerwony jasny",
+                        "Z/19 - plastik  żółty",
+                        "Z/12 - plastik  biały" ]
+
 
 def dir_list(path):  # ma zwracać listę folderów w folderze
     list = os.listdir(path)
