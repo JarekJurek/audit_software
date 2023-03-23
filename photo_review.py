@@ -8,8 +8,10 @@ import tkinter as tk
 
 from utilities import pollution_database
 
-from pkg_resources import add_activation_listener
+# from pkg_resources import add_activation_listener
 # import OGXImage
+
+from ogximg import OGXImageSeries, OGXImage
 
 pollution_name = "empty"
 
@@ -120,7 +122,7 @@ def changing_dir_meat(data_path_main, meat_name):  # zmienia ścieżkę w zależ
     os.chdir(path)
     return path, meat_name
 
-def get_series_path_list(data_path_main, meat_name):
+def get_series_path_list(data_path_main, meat_name, test_name = None):
     series_path_list = []
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
@@ -134,13 +136,18 @@ def get_series_path_list(data_path_main, meat_name):
         for test_path in test_paths:
             series_path = os.path.join(test_path_main, test_path, '0', 'camera_series')
             results_path = os.path.join(data_path_main, meat_name, 'results', linia_path, meat_name, test_path, '0')
-            if test_path == 'test12':
-                series_path_list.append((series_path, results_path))
+            if test_name is not None:#skip not chosen series
+                if test_path != test_name:
+                    continue
+            series_path_list.append((series_path, results_path))
     return series_path_list
 
 def dir_list(path):  # ma zwracać listę folderów w folderze
-    list = os.listdir(path)
-    return list
+    folders = os.listdir(path)
+    # print(folders)
+    folders = [f for f in folders if os.path.isdir(path+'/'+f)]  # Filtering only folders
+    # print(folders)
+    return folders
 
 
 def dir_counter(path):  # liczy ilość foderów w ścieżce
@@ -254,6 +261,11 @@ def add_labelled_pollutions(labbeled_image_description, meat_type):
     label_data = generate_label_data(meat_type)
     labbeled_image_description['label_data'] = label_data
 
+def get_labelled_pollutions(labbeled_image_description):
+    label_data = labbeled_image_description['label_data']
+    global labelled_pollutions
+    labelled_pollutions = label_data['pollutions']
+
 def add_detected_pollutions(labbeled_image_description, image_size, detected_results, results_image):
     detected_pollutions = generate_detected_pollutions(image_size, detected_results, results_image)
     labbeled_image_description['detected_pollutions'] = detected_pollutions
@@ -272,13 +284,13 @@ def mark_pollution(event,x,y,flags,param):
         add_pollution(p, refPt[0], refPt[1])
         cv.imshow('window', concaterated_image)
 
-def gui_control(base_image, results_image, detected_results, max_i, max_p):
+def gui_control(base_image, results_image, detected_results, max_i, max_p, record_labbeled = True):
     # init global variables for gui_control
     global refPt, prev_i, i, labelled_pollutions, p, concaterated_image, cropping
     refPt = []
     cropping = False
 
-    if prev_i != i:
+    if prev_i != i and record_labbeled:
         labelled_pollutions = []
 
     prev_i = i
@@ -301,7 +313,10 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
     concaterated_image = np.concatenate((base_image, results_image), axis=1)
     cv.namedWindow("window")#, cv.WND_PROP_FULLSCREEN)
 
-    cv.setMouseCallback('window', mark_pollution)
+    if record_labbeled:
+        cv.setMouseCallback('window', mark_pollution)
+    # if detected_results is None:
+    #     detected_results = -1
     cv.putText(concaterated_image, f"Detected pollution : {detected_results}", (900, 20), font, 0.5, detected_pollutions_color, 1)
     cv.putText(concaterated_image, f"Current pollution : {pollution_database[p]}", (900, 40), font, 0.5, current_pollutions_color, 1)
 
@@ -310,14 +325,24 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
         labelled_pollution = labelled_pollutions[lpi]
         cv.putText(concaterated_image, f"Labelled pollution : {labelled_pollution['type']}", (900, 60 + 20*lpi), font, 0.5, previous_pollutions_color, 1)
         labelled_pollution_location_rectangle = labelled_pollution['location_rectangle'] 
-        pollution_start_point = labelled_pollution_location_rectangle[0]
-        pollution_end_point = labelled_pollution_location_rectangle[1]
+        pollution_start_point = tuple(labelled_pollution_location_rectangle[0])
+        pollution_end_point = tuple(labelled_pollution_location_rectangle[1])
+
         cv.rectangle(concaterated_image, pollution_start_point, pollution_end_point, previous_pollutions_color, 2)
     
     cv.imshow('window', concaterated_image)
 
     key = cv.waitKey(0)
 
+    if key == ord('w'):# choose image, small step
+        i += 1
+        if i >= max_i:
+            print("koniec zdjec")
+            return True
+    if key == ord('s'):# choose image, small stepw
+        i -= 1
+        if i < 0:
+            i = 0
     if key == ord('j'):# choose pollution type
         p -= 1
         if p < 0:
@@ -326,16 +351,16 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p):
         p += 1
         if p >= max_p:
             p = 0
-    elif key == ord('d'):# choose image
+    if key == ord('d'):# choose image
         i += 10
         if i >= max_i:
             print("koniec zdjec")
             return True
-    elif key == ord('a'):# choose image
+    if key == ord('a'):# choose image
         i -= 10
         if i < 0:
             i = 0
-    elif key == 27:
+    if key == 27:
         return True
     
     return False
@@ -379,9 +404,11 @@ def update_series_description_pickle_path(series_description,series_path, image_
 
 def get_detected_pollutions_pixels_count(series_path, results_folder_number):
     detected_results_path = os.path.join(series_path[1], str(results_folder_number), 'data.json')
-    with open(detected_results_path) as detected_results_file:
-        detected_results_data = json.load(detected_results_file)
-    detected_pollutions_pixels_count = detected_results_data["count"]
+    detected_pollutions_pixels_count = None
+    if os.path.exists(detected_results_path):
+        with open(detected_results_path) as detected_results_file:
+            detected_results_data = json.load(detected_results_file)
+        detected_pollutions_pixels_count = detected_results_data["count"]
     return detected_pollutions_pixels_count
 
 def add_all_base_images(labbeled_image_description, series_image_data):
@@ -404,6 +431,21 @@ def save_series_labelled_metadata(series_path, series_labelled_metadata):
         json.dump(series_labelled_metadata, labelled_file, indent=4, sort_keys=True)
         print('dumped results to ' + series_labelled_file_path)
     return
+
+def load_series_labelled_metadata(series_path):
+    # load labelled series json
+    series_labelled_metadata = None
+    files = os.listdir(series_path[1])
+    files = [f for f in files if f.endswith(".json")]  # Filtering only *.json files
+    if files is not None:
+        series_labelled_file_path = None
+        if len(files) > 0:
+            series_labelled_file_path = files[0]
+        if series_labelled_file_path is not None:
+            with open(os.path.join(series_path[1],series_labelled_file_path), 'r') as labelled_file:
+                series_labelled_metadata = json.load(labelled_file)
+                print('loaded series_labelled_metadata from ' + series_labelled_file_path)
+    return series_labelled_metadata
 
 def review_data_from_results(data_path_main, meat_type):
     series_path_list = get_series_path_list(data_path_main, meat_type)
@@ -431,7 +473,7 @@ def review_data_from_results(data_path_main, meat_type):
             results_folder_number = i//10+1
 
             # read results images
-            base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_2.jpg')
+            base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_0.jpg')
             print(base_image_path)
             base_image = cv.imread(base_image_path) 
 
@@ -462,17 +504,66 @@ def review_data_from_results(data_path_main, meat_type):
                 save_series_labelled_metadata(series_path, series_labelled_metadata)
                 break
 
-# def config_gui():
-#     global refPt, cropping
-#     refPt = []
-#     cropping = False
+
+def show_labelled_results(data_path_main, meat_type, test_name):
+    series_path_list = get_series_path_list(data_path_main, meat_type, test_name)
+    for series_path in series_path_list:
+        series_labelled_metadata = load_series_labelled_metadata(series_path)
+        # load info from series_metadata.json
+        series_description = load_one_series_description(series_path)
+        series_meta_data = load_one_series_metadata(series_description)
+        series_image_data = load_one_series_image_data(series_meta_data)
+
+        ogx_series = OGXImageSeries.from_pickle(series_path[0])
+        # ogx_series.preview()
+
+        global i
+        init_global_indexes()
+
+        max_i = get_images_index_max(series_path[1]) * 10
+        while True:
+            # for i in range(0, len(series_image_data), 10):
+
+            # image_key = 'ogx_image_' + str(i)
+            cv_img = ogx_series.get_image(i)
+            preview_size = (512, 512)
+            pkl_image = cv.resize(cv_img, preview_size)
+            cv.imshow('pkl_image', pkl_image)
+
+            # todo: correct this
+            # update_series_description_pickle_path(series_description, series_path, image_key)
+
+            results_folder_number = i // 10 + 1
+
+            # read results images
+            base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_0.jpg')
+            # print(base_image_path)
+            base_image = cv.imread(base_image_path)
+
+            results_image_path = os.path.join(series_path[1], str(results_folder_number), 'result_clean.jpg')
+            # print(results_image_path)
+            results_image = cv.imread(results_image_path)
+
+            detected_pollutions_pixels_count = get_detected_pollutions_pixels_count(series_path, results_folder_number)
+
+            new_entry_name = 'result_' + str(results_folder_number)
+            if new_entry_name in series_labelled_metadata.keys():
+                get_labelled_pollutions(series_labelled_metadata[new_entry_name])
+
+            is_brake = gui_control(base_image, results_image, detected_pollutions_pixels_count, max_i,
+                                   len(pollution_database), False)
+
+            if is_brake:
+                break
 
 def main():
     # config_gui()
     data_path_main = 'C:\\Users\\linnia1\\Desktop\\test_02_22'  # początek ścieżki absolutnej
-    meat_type = 'Sledziona wieprzowa'
+    meat_type = 'Nerka wieprzowa'
     # review_data_from_pickles(meat_type)
-    review_data_from_results(data_path_main, meat_type)
+    # review_data_from_results(data_path_main, meat_type)
+    test_name = None#'test1'
+    show_labelled_results(data_path_main, meat_type, test_name)
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
