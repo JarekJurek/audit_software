@@ -525,7 +525,7 @@ def show_labelled_results(data_path_main, meat_type, test_name):
             # for i in range(0, len(series_image_data), 10):
 
             # image_key = 'ogx_image_' + str(i)
-            cv_img = ogx_series.get_image(i)
+            cv_img, img_name = ogx_series.get_image(i)
             preview_size = (512, 512)
             pkl_image = cv.resize(cv_img, preview_size)
             cv.imshow('pkl_image', pkl_image)
