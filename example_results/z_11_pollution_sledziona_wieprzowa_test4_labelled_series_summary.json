@@ -1,0 +1,64 @@
+{
+    "Sledziona wieprzowa": {
+        "No pollution": {
+            "False negative": 0,
+            "False positive": 5,
+            "True negative": 24,
+            "True positive": 0
+        },
+        "Z/10 - kaptur foliowy niebieski \u015bredni": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        },
+        "Z/11 - kaptur foliowy niebieski gruby": {
+            "False negative": 1,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 5
+        },
+        "Z/14 - plastik czerwony ciemne": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        },
+        "Z/15 - plastik czerwony jasny": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        },
+        "Z/19 - plastik  \u017c\u00f3\u0142ty": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        },
+        "Z/31 - r\u0119kawica niebieska bardzo cienka": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        },
+        "Z/32 - r\u0119kawica niebieska cienka": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        },
+        "Z/33 - r\u0119kawica niebieska gruba": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        },
+        "Z/9 - kaptur foliowy niebieski cienki": {
+            "False negative": 0,
+            "False positive": 0,
+            "True negative": 0,
+            "True positive": 0
+        }
+    }
+}
