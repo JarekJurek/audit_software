@@ -7,7 +7,7 @@ from utilities import get_series_path_list, dir_list, pollution_database
 
 def main():
 
-    data_path_main = 'C:\\Users\\linnia1\\Desktop\\test_02_22'  # początek ścieżki absolutnej
+    data_path_main = r'C:\Users\linnia1\Desktop\test_09_08_2023_A'  # początek ścieżki absolutnej
 
     pollutions_summary = {}
 
@@ -27,7 +27,7 @@ def main():
     # ...
 
     # check one meat in data_path_main folder
-    meat_type = 'Sledziona wieprzowa'
+    meat_type = 'Watroba wieprzowa'
     if os.path.isdir(os.path.join(data_path_main, meat_type)):
 
         meat_type_pollutions_summary = {}

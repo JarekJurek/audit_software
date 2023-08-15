@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5ba72d2-8a05-4cde-8802-f8f929366aea" name="Default Changelist" comment="">
+    <list default="true" id="a33ec11a-a7b7-49e2-91e4-73a47b138fc1" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/photo_review.py" beforeDir="false" afterPath="$PROJECT_DIR$/photo_review.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/review_summary.py" beforeDir="false" afterPath="$PROJECT_DIR$/review_summary.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -11,6 +31,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="2M0F5HxgrdH64tUMoYOeMe2crwI" />
@@ -21,6 +46,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunManager" selected="Python.photo_review">
@@ -84,50 +110,53 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="197" y="135" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1677157292304">
+    <state width="1515" height="203" key="GridCell.Tab.0.bottom" timestamp="1692087949139">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="197" y="135" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1677157292304" />
-    <state width="1515" height="171" key="GridCell.Tab.0.bottom" timestamp="1679582449334">
+    <state width="1515" height="203" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1692087949139" />
+    <state width="787" height="332" key="GridCell.Tab.0.bottom/0.0.2450.1297@0.0.2450.1297" timestamp="1691860599652" />
+    <state width="787" height="332" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1691860432152" />
+    <state width="1515" height="203" key="GridCell.Tab.0.center" timestamp="1692087949138">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="171" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1679582449334" />
-    <state width="1515" height="171" key="GridCell.Tab.0.center" timestamp="1679582449334">
+    <state width="1515" height="203" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1692087949138" />
+    <state width="787" height="332" key="GridCell.Tab.0.center/0.0.2450.1297@0.0.2450.1297" timestamp="1691860599651" />
+    <state width="787" height="332" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1691860432152" />
+    <state width="1515" height="203" key="GridCell.Tab.0.left" timestamp="1692087949138">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="171" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1679582449334" />
-    <state width="1515" height="171" key="GridCell.Tab.0.left" timestamp="1679582449334">
+    <state width="1515" height="203" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1692087949138" />
+    <state width="787" height="332" key="GridCell.Tab.0.left/0.0.2450.1297@0.0.2450.1297" timestamp="1691860599651" />
+    <state width="787" height="332" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1691860432151" />
+    <state width="1515" height="203" key="GridCell.Tab.0.right" timestamp="1692087949139">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="171" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1679582449334" />
-    <state width="1515" height="171" key="GridCell.Tab.0.right" timestamp="1679582449334">
+    <state width="1515" height="203" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1692087949139" />
+    <state width="787" height="332" key="GridCell.Tab.0.right/0.0.2450.1297@0.0.2450.1297" timestamp="1691860599652" />
+    <state width="787" height="332" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1691860432152" />
+    <state width="1515" height="165" key="GridCell.Tab.1.bottom" timestamp="1692087692199">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="171" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1679582449334" />
-    <state width="1515" height="261" key="GridCell.Tab.1.bottom" timestamp="1679580384624">
+    <state width="1515" height="165" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1692087692199" />
+    <state width="1515" height="165" key="GridCell.Tab.1.center" timestamp="1692087692199">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="261" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1679580384624" />
-    <state width="1515" height="261" key="GridCell.Tab.1.center" timestamp="1679580384624">
+    <state width="1515" height="165" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1692087692199" />
+    <state width="1515" height="165" key="GridCell.Tab.1.left" timestamp="1692087692199">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="261" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1679580384624" />
-    <state width="1515" height="261" key="GridCell.Tab.1.left" timestamp="1679580384624">
+    <state width="1515" height="165" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1692087692199" />
+    <state width="1515" height="165" key="GridCell.Tab.1.right" timestamp="1692087692199">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1515" height="261" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1679580384624" />
-    <state width="1515" height="261" key="GridCell.Tab.1.right" timestamp="1679580384624">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1515" height="165" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1692087692199" />
+    <state x="1234" y="546" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1691840773187">
+      <screen x="0" y="0" width="2450" height="1297" />
     </state>
-    <state width="1515" height="261" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1679580384624" />
-    <state x="373" y="23" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1679580199026">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="373" y="23" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1536.824@0.0.1536.824" timestamp="1679580199026" />
-    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1676901656962">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1676901656962" />
+    <state x="1234" y="546" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2450.1297@0.0.2450.1297" timestamp="1691840773187" />
   </component>
 </project>
