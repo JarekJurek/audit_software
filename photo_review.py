@@ -122,12 +122,12 @@ def changing_dir_meat(data_path_main, meat_name):  # zmienia ścieżkę w zależ
     os.chdir(path)
     return path, meat_name
 
-def get_series_path_list(data_path_main, meat_name, test_name = None):
+def get_series_path_list(data_path_main, meat_name, test_name = None, results_folder_name = 'results'):
     series_path_list = []
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
         meat_name = meat_name.strip()
-    data_path_main = r'C:\Users\linnia1\Desktop\test_09_08_2023_A'  # początek ścieżki absolutnej
+    data_path_main = r'C:\Users\linnia1\Desktop\test_08_23'  # początek ścieżki absolutnej
     linia_path_main = os.path.join(data_path_main, meat_name, 'data')
     linia_paths = dir_list(linia_path_main)
     for linia_path in linia_paths:
@@ -135,7 +135,7 @@ def get_series_path_list(data_path_main, meat_name, test_name = None):
         test_paths = dir_list(test_path_main)
         for test_path in test_paths:
             series_path = os.path.join(test_path_main, test_path, '0', 'camera_series')
-            results_path = os.path.join(data_path_main, meat_name, 'results', linia_path, meat_name, test_path, '0')
+            results_path = os.path.join(data_path_main, meat_name, results_folder_name, linia_path, meat_name, test_path, '0')
             if test_name is not None:#skip not chosen series
                 if test_path != test_name:
                     continue
@@ -284,6 +284,64 @@ def mark_pollution(event,x,y,flags,param):
         add_pollution(p, refPt[0], refPt[1])
         cv.imshow('window', concaterated_image)
 
+def print_colors(x,y, image):
+    # colorsB = image[y, x, 0]
+    # colorsG = image[y, x, 1]
+    # colorsR = image[y, x, 2]
+    colors = image[y, x]
+    # print("Red: ", colorsR)
+    # print("Green: ", colorsG)
+    # print("Blue: ", colorsB)
+    print("BRG Format: ", colors)
+    print("Coordinates of pixel: X: ", x, "Y: ", y)
+
+def mouse_show_hsv_0(event,x,y,flags,param):
+    if event == cv.EVENT_LBUTTONDOWN: #checks mouse left button down condition
+        print_colors(x, y, pair_0_diff_channel_image)
+
+def mouse_show_hsv_1(event,x,y,flags,param):
+    if event == cv.EVENT_LBUTTONDOWN: #checks mouse left button down condition
+        print_colors(x, y, pair_1_diff_channel_image)
+
+def mouse_show_hsv_gray(event,x,y,flags,param):
+    if event == cv.EVENT_LBUTTONDOWN: #checks mouse left button down condition
+        print_colors(x, y, gray_1_pollution_image_mask)
+
+def on_change_pair_0_diff_blend(value):
+    global pair_0_diff_blend
+    pair_0_diff_blend = float(value)/100.0
+    show_pair_0_blend()
+def on_change_pair_0_conv_blend(value):
+    global pair_0_conv_blend
+    pair_0_conv_blend = float(value)/100.0
+    show_pair_0_blend()
+def on_change_pair_0_pollution_blend(value):
+    global pair_0_pollution_blend
+    pair_0_pollution_blend = float(value)/100.0
+    show_pair_0_blend()
+def on_change_pair_1_diff_blend(value):
+    global pair_1_diff_blend
+    pair_1_diff_blend = float(value)/100.0
+    show_pair_1_blend()
+def on_change_pair_1_conv_blend(value):
+    global pair_1_conv_blend
+    pair_1_conv_blend = float(value)/100.0
+    show_pair_1_blend()
+def on_change_pair_1_pollution_blend(value):
+    global pair_1_pollution_blend
+    pair_1_pollution_blend = float(value)/100.0
+    show_pair_1_blend()
+
+def show_pair_0_blend():
+    img = cv.addWeighted(pair_0_diff_channel_image, pair_0_diff_blend, conveyor_image_mask, pair_0_conv_blend, 0)
+    img = cv.addWeighted(img, 1.0, pair_0_pollution_image_mask, pair_0_pollution_blend, 0)
+    cv.imshow(pair_0_window_name, img)
+def show_pair_1_blend():
+    img = cv.addWeighted(pair_1_diff_channel_image, pair_1_diff_blend, conveyor_image_mask, pair_1_conv_blend, 0)
+    img = cv.addWeighted(img, 1.0, pair_1_pollution_image_mask, pair_1_pollution_blend, 0)
+    cv.imshow(pair_1_window_name, img)
+# def show_blended_images():
+
 def gui_control(base_image, results_image, detected_results, max_i, max_p, record_labbeled = True):
     # init global variables for gui_control
     global refPt, prev_i, i, labelled_pollutions, p, concaterated_image, cropping
@@ -302,6 +360,31 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p, recor
 
     # cv.imshow("base_iamge", cv.resize(base_image, (512, 512)) )
     # cv.imshow("results_image", cv.resize(results_image, (512, 512)) )
+
+
+    show_pair_0_blend()
+    global pair_0_trackbars_added
+    if not pair_0_trackbars_added:
+        cv.createTrackbar('pair_0_diff_blend', pair_0_window_name, 0, 100, on_change_pair_0_diff_blend)
+        cv.createTrackbar('pair_0_conv_blend', pair_0_window_name, 0, 100, on_change_pair_0_conv_blend)
+        cv.createTrackbar('pair_0_pollution_blend', pair_0_window_name, 0, 100, on_change_pair_0_pollution_blend)
+        pair_0_trackbars_added = True
+
+    show_pair_1_blend()
+    global pair_1_trackbars_added
+    if not pair_1_trackbars_added:
+        cv.createTrackbar('pair_1_diff_blend', pair_1_window_name, 0, 100, on_change_pair_1_diff_blend)
+        cv.createTrackbar('pair_1_conv_blend', pair_1_window_name, 0, 100, on_change_pair_1_conv_blend)
+        cv.createTrackbar('pair_1_pollution_blend', pair_1_window_name, 0, 100, on_change_pair_1_pollution_blend)
+        pair_1_trackbars_added = True
+
+    # cv.imshow("pair_1_diff_channel_image", pair_1_diff_channel_image)
+    # cv.imshow("gray_1_pollution_image_mask", gray_1_pollution_image_mask)
+
+    cv.setMouseCallback('pair_0_diff_channel_image', mouse_show_hsv_0)
+    cv.setMouseCallback('pair_1_diff_channel_image', mouse_show_hsv_1)
+    # cv.setMouseCallback('gray_1_pollution_image_mask', mouse_show_hsv_gray)
+
 
     if results_image.shape[0] < base_image.shape[0] and results_image.shape[1] < base_image.shape[1]:
         value = [0, 0, 0]
@@ -476,7 +559,7 @@ def review_data_from_results(data_path_main, meat_type):
             results_folder_number = i//10+1
 
             # read results images
-            base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_0.jpg')
+            base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_3.jpg')
             print(base_image_path)
             base_image = cv.imread(base_image_path) 
 
@@ -507,9 +590,18 @@ def review_data_from_results(data_path_main, meat_type):
                 save_series_labelled_metadata(series_path, series_labelled_metadata)
                 break
 
+def load_image(image_name, series_path, results_folder_number):
+    image_path = os.path.join(series_path[1], str(results_folder_number), image_name + '.png')
+    # print(results_image_path)
+    image = cv.imread(image_path)
+    if image is None:
+        image_path = os.path.join(series_path[1], str(results_folder_number),
+                                                      image_name + '.jpg')
+        image = cv.imread(image_path)
+    return image, image_path
 
-def show_labelled_results(data_path_main, meat_type, test_name):
-    series_path_list = get_series_path_list(data_path_main, meat_type, test_name)
+def show_labelled_results(data_path_main, meat_type, test_name, results_folder_name = 'results'):
+    series_path_list = get_series_path_list(data_path_main, meat_type, test_name, results_folder_name = results_folder_name)
     for series_path in series_path_list:
         series_labelled_metadata = load_series_labelled_metadata(series_path)
         # load info from series_metadata.json
@@ -519,6 +611,19 @@ def show_labelled_results(data_path_main, meat_type, test_name):
 
         ogx_series = OGXImageSeries.from_pickle(series_path[0])
         # ogx_series.preview()
+
+        global pair_0_diff_blend, pair_0_conv_blend, pair_0_pollution_blend, pair_0_window_name, pair_0_trackbars_added
+        global pair_1_diff_blend, pair_1_conv_blend, pair_1_pollution_blend, pair_1_window_name, pair_1_trackbars_added
+        pair_0_window_name = "pair_0_diff_channel_image"
+        pair_1_window_name = "pair_1_diff_channel_image"
+        pair_0_trackbars_added = False
+        pair_1_trackbars_added = False
+        pair_0_diff_blend = 1.0
+        pair_0_conv_blend = 0.0
+        pair_0_pollution_blend = 0.0
+        pair_1_diff_blend = 1.0
+        pair_1_conv_blend = 0.0
+        pair_1_pollution_blend = 0.0
 
         global i
         init_global_indexes()
@@ -539,20 +644,26 @@ def show_labelled_results(data_path_main, meat_type, test_name):
             results_folder_number = i // 10 + 1
 
             # read results images
-            base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_0.png')
-            # print(base_image_path)
-            base_image = cv.imread(base_image_path)
-            if base_image is None:
-                base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_0.jpg')
-                base_image = cv.imread(base_image_path)
+            base_image, base_image_path = load_image('base_image_3', series_path, results_folder_number)
+            results_image, results_image_path = load_image('result_clean', series_path, results_folder_number)
 
+            global pair_0_diff_channel_image
+            pair_0_diff_channel_image, pair_0_diff_channel_image_path = load_image('pair_0_diff_channel', series_path, results_folder_number)
 
-            results_image_path = os.path.join(series_path[1], str(results_folder_number), 'result_clean.png')
-            # print(results_image_path)
-            results_image = cv.imread(results_image_path)
-            if results_image is None:
-                results_image_path = os.path.join(series_path[1], str(results_folder_number), 'result_clean.jpg')
-                results_image = cv.imread(results_image_path)
+            global pair_1_diff_channel_image
+            pair_1_diff_channel_image, pair_1_diff_channel_image_path = load_image('pair_1_diff_channel', series_path, results_folder_number)
+
+            global gray_1_pollution_image_mask
+            gray_1_pollution_image_mask, gray_1_pollution_image_mask_path = load_image('gray_1_pollution_image_mask', series_path, results_folder_number)
+
+            global pair_0_pollution_image_mask
+            pair_0_pollution_image_mask, pair_0_pollution_image_mask_path = load_image('pair_0_pollution_image_mask', series_path, results_folder_number)
+
+            global pair_1_pollution_image_mask
+            pair_1_pollution_image_mask, pair_1_pollution_image_mask_path = load_image('pair_1_pollution_image_mask', series_path, results_folder_number)
+
+            global conveyor_image_mask
+            conveyor_image_mask, conveyor_image_mask_path = load_image('pair_0_conveyor_mask', series_path, results_folder_number)
 
             detected_pollutions_pixels_count = get_detected_pollutions_pixels_count(series_path, results_folder_number)
             print('folder:', results_folder_number)
@@ -574,12 +685,12 @@ def show_labelled_results(data_path_main, meat_type, test_name):
 
 def main():
     # config_gui()
-    data_path_main = r'C:\Users\linnia1\Desktop\test_09_08_2023_A'  # początek ścieżki absolutnej
-    meat_type = 'Watroba wieprzowa'
+    data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_08_23\\'  # początek ścieżki absolutnej
+    meat_type = 'Pluca wieprzowe'
     # review_data_from_pickles(meat_type)
     # review_data_from_results(data_path_main, meat_type)
-    test_name = 'test1' # if there's no test0, change here to: 'test1' if is 'None'
-    show_labelled_results(data_path_main, meat_type, test_name)
+    test_name = None#'test1' # if there's no test0, change here to: 'test1' if is 'None'
+    show_labelled_results(data_path_main, meat_type, test_name, results_folder_name = 'results_-5_true')
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
