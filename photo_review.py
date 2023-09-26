@@ -633,7 +633,7 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
             # for i in range(0, len(series_image_data), 10):
 
             # image_key = 'ogx_image_' + str(i)
-            cv_img = ogx_series.get_image(i)
+            cv_img, _ = ogx_series.get_image(i)
             preview_size = (512, 512)
             pkl_image = cv.resize(cv_img, preview_size)
             cv.imshow('pkl_image', pkl_image)
@@ -685,12 +685,19 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
 
 def main():
     # config_gui()
+    # W2 tests:
     data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_08_23\\'  # początek ścieżki absolutnej
-    meat_type = 'Nerka wieprzowa'
+    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa.old', 'test1', 'results_0_true'
+    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test1', 'results_-8_true'
+    # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_true'
+    # meat_type, test_name, results_folder_name = 'Przelyk wieprzowy', 'test1', 'results_-8_True'
+    # meat_type, test_name, results_folder_name = 'Serca wieprzowe', 'test0', 'results_0_True'
+    # meat_type, test_name, results_folder_name = 'Sledziona wieprzowa', 'test1', 'results_0_True'
+    # meat_type, test_name, results_folder_name = 'Watroba wieprzowa', 'test1', 'results_0_True'
+    meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_0_True'
     # review_data_from_pickles(meat_type)
     # review_data_from_results(data_path_main, meat_type)
-    test_name = 'test1' #'test1' if there's no test0, change here to: 'test1' if is 'None'
-    show_labelled_results(data_path_main, meat_type, test_name, results_folder_name = 'results_0_true')
+    show_labelled_results(data_path_main, meat_type, test_name, results_folder_name)
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
