@@ -618,12 +618,12 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
         pair_1_window_name = "pair_1_diff_channel_image"
         pair_0_trackbars_added = False
         pair_1_trackbars_added = False
-        pair_0_diff_blend = 1.0
+        pair_0_diff_blend = 0.5
         pair_0_conv_blend = 0.0
-        pair_0_pollution_blend = 0.0
-        pair_1_diff_blend = 1.0
+        pair_0_pollution_blend = 1.0
+        pair_1_diff_blend = 0.5
         pair_1_conv_blend = 0.0
-        pair_1_pollution_blend = 0.0
+        pair_1_pollution_blend = 1.0
 
         global i
         init_global_indexes()
@@ -686,11 +686,11 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
 def main():
     # config_gui()
     data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_08_23\\'  # początek ścieżki absolutnej
-    meat_type = 'Pluca wieprzowe'
+    meat_type = 'Nerka wieprzowa'
     # review_data_from_pickles(meat_type)
     # review_data_from_results(data_path_main, meat_type)
-    test_name = None#'test1' # if there's no test0, change here to: 'test1' if is 'None'
-    show_labelled_results(data_path_main, meat_type, test_name, results_folder_name = 'results_-5_true')
+    test_name = 'test1' #'test1' if there's no test0, change here to: 'test1' if is 'None'
+    show_labelled_results(data_path_main, meat_type, test_name, results_folder_name = 'results_0_true')
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
