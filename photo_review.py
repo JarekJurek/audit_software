@@ -127,7 +127,7 @@ def get_series_path_list(data_path_main, meat_name, test_name = None, results_fo
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
         meat_name = meat_name.strip()
-    data_path_main = r'C:\Users\linnia1\Desktop\test_08_23'  # początek ścieżki absolutnej
+    # data_path_main = r'C:\Users\linnia1\Desktop\test_08_23'  # początek ścieżki absolutnej
     linia_path_main = os.path.join(data_path_main, meat_name, 'data')
     linia_paths = dir_list(linia_path_main)
     for linia_path in linia_paths:
@@ -333,13 +333,23 @@ def on_change_pair_1_pollution_blend(value):
     show_pair_1_blend()
 
 def show_pair_0_blend():
+    if pair_0_diff_channel_image is None or conveyor_image_mask is None:
+        return
     img = cv.addWeighted(pair_0_diff_channel_image, pair_0_diff_blend, conveyor_image_mask, pair_0_conv_blend, 0)
+    if img is None or pair_0_pollution_image_mask is None:
+        return
     img = cv.addWeighted(img, 1.0, pair_0_pollution_image_mask, pair_0_pollution_blend, 0)
-    cv.imshow(pair_0_window_name, img)
+    if img is not None:
+        cv.imshow(pair_0_window_name, img)
 def show_pair_1_blend():
+    if pair_1_diff_channel_image is None or conveyor_image_mask is None:
+        return
     img = cv.addWeighted(pair_1_diff_channel_image, pair_1_diff_blend, conveyor_image_mask, pair_1_conv_blend, 0)
+    if img is None or pair_1_pollution_image_mask is None:
+        return
     img = cv.addWeighted(img, 1.0, pair_1_pollution_image_mask, pair_1_pollution_blend, 0)
-    cv.imshow(pair_1_window_name, img)
+    if img is not None:
+        cv.imshow(pair_1_window_name, img)
 # def show_blended_images():
 
 def gui_control(base_image, results_image, detected_results, max_i, max_p, record_labbeled = True):
@@ -664,6 +674,9 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
 
             global conveyor_image_mask
             conveyor_image_mask, conveyor_image_mask_path = load_image('pair_0_conveyor_mask', series_path, results_folder_number)
+            if conveyor_image_mask is None:
+                conveyor_image_mask, conveyor_image_mask_path = load_image('pair_1_conveyor_mask', series_path, results_folder_number)
+
 
             detected_pollutions_pixels_count = get_detected_pollutions_pixels_count(series_path, results_folder_number)
             print('folder:', results_folder_number)
@@ -676,7 +689,10 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
                                    len(pollution_database), False)
             if save_pkl_image:
                 if pkl_image is not None:
-                    pkl_image_path = os.path.join(series_path[1], str(results_folder_number), 'pkl_image_' + str(i) + '.png')
+                    pkl_folder_path = pkl_image_path = os.path.join('C:\\Users\\linnia1\\Pictures\\Saved Pictures\\', str(meat_type))
+                    if not os.path.exists(pkl_folder_path):
+                        os.makedirs(pkl_folder_path)
+                    pkl_image_path = pkl_folder_path + '\\pkl_image_' + str(i) + '.png'
                     cv.imwrite(pkl_image_path, cv_img)
                     print('saved pkl_image in ' +  pkl_image_path)
 
@@ -686,7 +702,7 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
 def main():
     # config_gui()
     # W2 tests:
-    data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_08_23\\'  # początek ścieżki absolutnej
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_08_23\\'  # początek ścieżki absolutnej
     # meat_type, test_name, results_folder_name = 'Nerka wieprzowa.old', 'test1', 'results_0_true'
     # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test1', 'results_-8_true'
     # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_true'
@@ -694,7 +710,42 @@ def main():
     # meat_type, test_name, results_folder_name = 'Serca wieprzowe', 'test0', 'results_0_True'
     # meat_type, test_name, results_folder_name = 'Sledziona wieprzowa', 'test1', 'results_0_True'
     # meat_type, test_name, results_folder_name = 'Watroba wieprzowa', 'test1', 'results_0_True'
-    meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_0_True'
+    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_0_True'
+
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_03_10_23\\'  # początek ścieżki absolutnej
+    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_0_true'
+    # meat_type, test_name, results_folder_name = 'Watroba wieprzowa', 'test1', 'results_0_true'
+
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_05_10_23\\'  # początek ścieżki absolutnej
+    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_-8_true'
+
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_06_10_23\\'  # początek ścieżki absolutnej
+    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test1', 'results_-3_true'
+
+    # final tests
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_09_10_2023\\'  # początek ścieżki absolutnej
+    # meat_type, test_name, results_folder_name d= 'Sledziona wieprzowa', 'test0', 'results_none_true'
+    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_-3_true'
+
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_11_10_2023\\'  # początek ścieżki absolutnej
+    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_-8_true'
+    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test0', 'results_-3_true'dd
+    # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_true'
+    # meat_type, test_name, results_folder_name = 'Serca wieprzowe', 'test0', 'results_0_true'
+
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_26_10_2023\\'  # początek ścieżki absolutnej
+    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_none_true'
+
+    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\odbior_21_02_24\\'  # początek ścieżki absolutnej
+    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_None_False'
+    # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_True'
+    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test3', 'results_None_True'
+
+    data_path_main = r'C:\\Users\\linnia1\\Desktop\\odbior_08_03_24\\'  # początek ścieżki absolutnej
+    meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_None_True'
+
+
+
     # review_data_from_pickles(meat_type)
     # review_data_from_results(data_path_main, meat_type)
     show_labelled_results(data_path_main, meat_type, test_name, results_folder_name)
