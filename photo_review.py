@@ -1,19 +1,18 @@
+import json
 import os
+import tkinter as tk
+
 import cv2 as cv
 import numpy as np
-import csv
-import json
-import pickle
-import tkinter as tk
+from ogximg import OGXImageSeries
 
 from utilities import pollution_database
 
 # from pkg_resources import add_activation_listener
 # import OGXImage
 
-from ogximg import OGXImageSeries, OGXImage
-
 pollution_name = "empty"
+
 
 # Wysoka:
 # Z/9	kaptur foliowy niebieski cienki
@@ -99,7 +98,7 @@ def input_box():
             "Pomarańczowy": var9.get(),
         }
         for key, value in dataBase.items():
-            if value is not 0:
+            if value != 0:
                 print(key)  # tą wartość (konkretny kolor) należy tutaj zpisać do pliku razem ze ścieżką
         label1 = tk.Label(root, text="Zapisano!")
         canvas1.create_window(100, 60, window=label1)  # output message box placement
@@ -113,7 +112,8 @@ def input_box():
     root.mainloop()
 
 
-def changing_dir_meat(data_path_main, meat_name):  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
+def changing_dir_meat(data_path_main,
+                      meat_name):  # zmienia ścieżkę w zależności od mięsa oraz zwraca ścieżkę wraz z nazwą mięsa
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
         meat_name = meat_name.strip()
@@ -122,7 +122,8 @@ def changing_dir_meat(data_path_main, meat_name):  # zmienia ścieżkę w zależ
     os.chdir(path)
     return path, meat_name
 
-def get_series_path_list(data_path_main, meat_name, test_name = None, results_folder_name = 'results'):
+
+def get_series_path_list(data_path_main, meat_name, test_name=None, results_folder_name='results'):
     series_path_list = []
     if meat_name is None:
         meat_name = input('Podaj nazwe mięsa')
@@ -135,17 +136,19 @@ def get_series_path_list(data_path_main, meat_name, test_name = None, results_fo
         test_paths = dir_list(test_path_main)
         for test_path in test_paths:
             series_path = os.path.join(test_path_main, test_path, '0', 'camera_series')
-            results_path = os.path.join(data_path_main, meat_name, results_folder_name, linia_path, meat_name, test_path, '0')
-            if test_name is not None:#skip not chosen series
+            results_path = os.path.join(data_path_main, meat_name, results_folder_name, linia_path, meat_name,
+                                        test_path, '0')
+            if test_name is not None:  # skip not chosen series
                 if test_path != test_name:
                     continue
             series_path_list.append((series_path, results_path))
     return series_path_list
 
+
 def dir_list(path):  # ma zwracać listę folderów w folderze
     folders = os.listdir(path)
     # print(folders)
-    folders = [f for f in folders if os.path.isdir(path+'/'+f)]  # Filtering only folders
+    folders = [f for f in folders if os.path.isdir(path + '/' + f)]  # Filtering only folders
     # print(folders)
     return folders
 
@@ -171,14 +174,16 @@ def jsonpath(path):  # tworzy scieżke do jsona
     json_path = os.path.join(path, json_name)
     return json_path
 
+
 def detected_is_inside_labelled_pollution(labelled_pollution, results_image):
-    labelled_pollution_location_rectangle = labelled_pollution['location_rectangle'] 
+    labelled_pollution_location_rectangle = labelled_pollution['location_rectangle']
     pollution_start_point = labelled_pollution_location_rectangle[0]
     pollution_end_point = labelled_pollution_location_rectangle[1]
-    labelled_pollution_results_image = results_image[pollution_start_point[1]:pollution_end_point[1], 
-                                                     pollution_start_point[0]:pollution_end_point[0]]
-    values = np.where((labelled_pollution_results_image == (255,255,255)).all(axis=2))
+    labelled_pollution_results_image = results_image[pollution_start_point[1]:pollution_end_point[1],
+                                       pollution_start_point[0]:pollution_end_point[0]]
+    values = np.where((labelled_pollution_results_image == (255, 255, 255)).all(axis=2))
     return len(values) > 0
+
 
 # are there any detected pollutions outside all labbeled pollution
 def is_any_detected_pollution_outside_all_labbeled_pollutions(results_image):
@@ -187,10 +192,12 @@ def is_any_detected_pollution_outside_all_labbeled_pollutions(results_image):
     for labelled_pollution in labelled_pollutions:
         # paint black filled rectangle on results_labbeled_cleared - clear results in labbeled pollution aera
         labelled_pollution_location_rectangle = labelled_pollution['location_rectangle']
-        cv.rectangle(results_labbeled_cleared, labelled_pollution_location_rectangle[0], labelled_pollution_location_rectangle[1], (0, 0, 0), -1)
+        cv.rectangle(results_labbeled_cleared, labelled_pollution_location_rectangle[0],
+                     labelled_pollution_location_rectangle[1], (0, 0, 0), -1)
     # count remaining pollutions
     values = np.where((results_labbeled_cleared == (255, 255, 255)).all(axis=2))
     return len(values) > 0
+
 
 def generate_detected_pollutions(image_size, detected_results, results_image):
     global labelled_pollutions
@@ -200,9 +207,9 @@ def generate_detected_pollutions(image_size, detected_results, results_image):
         # False positive
         pollution_start_point = (0, 0)
         pollution_end_point = (image_size[0], image_size[1])
-        pollution = {'type': pollution_database[0], #no pollution 
-                    'location_rectangle': (pollution_start_point, pollution_end_point),
-                    'confusion_value': "False positive"}
+        pollution = {'type': pollution_database[0],  # no pollution
+                     'location_rectangle': (pollution_start_point, pollution_end_point),
+                     'confusion_value': "False positive"}
         detected_pollutions.append(pollution)
     elif len(labelled_pollutions) > 0 and detected_results == True:
         # True positive (and False negative)
@@ -226,9 +233,9 @@ def generate_detected_pollutions(image_size, detected_results, results_image):
         # True negative
         pollution_start_point = (0, 0)
         pollution_end_point = (image_size[0], image_size[1])
-        pollution = {'type': pollution_database[0], #no pollution 
-                    'location_rectangle': (pollution_start_point, pollution_end_point),
-                    'confusion_value': "True negative"}
+        pollution = {'type': pollution_database[0],  # no pollution
+                     'location_rectangle': (pollution_start_point, pollution_end_point),
+                     'confusion_value': "True negative"}
         detected_pollutions.append(pollution)
 
     elif len(labelled_pollutions) > 0 and detected_results == False:
@@ -240,14 +247,16 @@ def generate_detected_pollutions(image_size, detected_results, results_image):
 
     return detected_pollutions
 
+
 def add_pollution(pollution_index, pollution_start_point, pollution_end_point):
     global labelled_pollutions
-    
+
     if pollution_database[p] != "No pollution":
-        pollution = {'type': pollution_database[pollution_index], 
-                    'location_rectangle': (pollution_start_point, pollution_end_point),
-                    'confusion_value': None}
+        pollution = {'type': pollution_database[pollution_index],
+                     'location_rectangle': (pollution_start_point, pollution_end_point),
+                     'confusion_value': None}
         labelled_pollutions.append(pollution)
+
 
 def generate_label_data(meat_type):
     global labelled_pollutions
@@ -257,21 +266,25 @@ def generate_label_data(meat_type):
 
     return label_data
 
+
 def add_labelled_pollutions(labbeled_image_description, meat_type):
     label_data = generate_label_data(meat_type)
     labbeled_image_description['label_data'] = label_data
+
 
 def get_labelled_pollutions(labbeled_image_description):
     label_data = labbeled_image_description['label_data']
     global labelled_pollutions
     labelled_pollutions = label_data['pollutions']
 
+
 def add_detected_pollutions(labbeled_image_description, image_size, detected_results, results_image):
     detected_pollutions = generate_detected_pollutions(image_size, detected_results, results_image)
     labbeled_image_description['detected_pollutions'] = detected_pollutions
 
+
 # mouse callback function
-def mark_pollution(event,x,y,flags,param):
+def mark_pollution(event, x, y, flags, param):
     global refPt, cropping, concaterated_image, p
     if event == cv.EVENT_LBUTTONDOWN:
         refPt = [(x, y)]
@@ -284,7 +297,8 @@ def mark_pollution(event,x,y,flags,param):
         add_pollution(p, refPt[0], refPt[1])
         cv.imshow('window', concaterated_image)
 
-def print_colors(x,y, image):
+
+def print_colors(x, y, image):
     # colorsB = image[y, x, 0]
     # colorsG = image[y, x, 1]
     # colorsR = image[y, x, 2]
@@ -295,42 +309,57 @@ def print_colors(x,y, image):
     print("BRG Format: ", colors)
     print("Coordinates of pixel: X: ", x, "Y: ", y)
 
-def mouse_show_hsv_0(event,x,y,flags,param):
-    if event == cv.EVENT_LBUTTONDOWN: #checks mouse left button down condition
+
+def mouse_show_hsv_0(event, x, y, flags, param):
+    if event == cv.EVENT_LBUTTONDOWN:  # checks mouse left button down condition
         print_colors(x, y, pair_0_diff_channel_image)
 
-def mouse_show_hsv_1(event,x,y,flags,param):
-    if event == cv.EVENT_LBUTTONDOWN: #checks mouse left button down condition
+
+def mouse_show_hsv_1(event, x, y, flags, param):
+    if event == cv.EVENT_LBUTTONDOWN:  # checks mouse left button down condition
         print_colors(x, y, pair_1_diff_channel_image)
 
-def mouse_show_hsv_gray(event,x,y,flags,param):
-    if event == cv.EVENT_LBUTTONDOWN: #checks mouse left button down condition
+
+def mouse_show_hsv_gray(event, x, y, flags, param):
+    if event == cv.EVENT_LBUTTONDOWN:  # checks mouse left button down condition
         print_colors(x, y, gray_1_pollution_image_mask)
+
 
 def on_change_pair_0_diff_blend(value):
     global pair_0_diff_blend
-    pair_0_diff_blend = float(value)/100.0
+    pair_0_diff_blend = float(value) / 100.0
     show_pair_0_blend()
+
+
 def on_change_pair_0_conv_blend(value):
     global pair_0_conv_blend
-    pair_0_conv_blend = float(value)/100.0
+    pair_0_conv_blend = float(value) / 100.0
     show_pair_0_blend()
+
+
 def on_change_pair_0_pollution_blend(value):
     global pair_0_pollution_blend
-    pair_0_pollution_blend = float(value)/100.0
+    pair_0_pollution_blend = float(value) / 100.0
     show_pair_0_blend()
+
+
 def on_change_pair_1_diff_blend(value):
     global pair_1_diff_blend
-    pair_1_diff_blend = float(value)/100.0
+    pair_1_diff_blend = float(value) / 100.0
     show_pair_1_blend()
+
+
 def on_change_pair_1_conv_blend(value):
     global pair_1_conv_blend
-    pair_1_conv_blend = float(value)/100.0
+    pair_1_conv_blend = float(value) / 100.0
     show_pair_1_blend()
+
+
 def on_change_pair_1_pollution_blend(value):
     global pair_1_pollution_blend
-    pair_1_pollution_blend = float(value)/100.0
+    pair_1_pollution_blend = float(value) / 100.0
     show_pair_1_blend()
+
 
 def show_pair_0_blend():
     if pair_0_diff_channel_image is None or conveyor_image_mask is None:
@@ -341,6 +370,8 @@ def show_pair_0_blend():
     img = cv.addWeighted(img, 1.0, pair_0_pollution_image_mask, pair_0_pollution_blend, 0)
     if img is not None:
         cv.imshow(pair_0_window_name, img)
+
+
 def show_pair_1_blend():
     if pair_1_diff_channel_image is None or conveyor_image_mask is None:
         return
@@ -350,9 +381,11 @@ def show_pair_1_blend():
     img = cv.addWeighted(img, 1.0, pair_1_pollution_image_mask, pair_1_pollution_blend, 0)
     if img is not None:
         cv.imshow(pair_1_window_name, img)
+
+
 # def show_blended_images():
 
-def gui_control(base_image, results_image, detected_results, max_i, max_p, record_labbeled = True):
+def gui_control(base_image, results_image, detected_results, max_i, max_p, record_labbeled=True):
     # init global variables for gui_control
     global refPt, prev_i, i, labelled_pollutions, p, concaterated_image, cropping
     refPt = []
@@ -370,7 +403,6 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p, recor
 
     # cv.imshow("base_iamge", cv.resize(base_image, (512, 512)) )
     # cv.imshow("results_image", cv.resize(results_image, (512, 512)) )
-
 
     show_pair_0_blend()
     global pair_0_trackbars_added
@@ -395,23 +427,24 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p, recor
     cv.setMouseCallback('pair_1_diff_channel_image', mouse_show_hsv_1)
     # cv.setMouseCallback('gray_1_pollution_image_mask', mouse_show_hsv_gray)
 
-
     if results_image.shape[0] < base_image.shape[0] and results_image.shape[1] < base_image.shape[1]:
         value = [0, 0, 0]
-        top = int((base_image.shape[0] - results_image.shape[0])/2)
+        top = int((base_image.shape[0] - results_image.shape[0]) / 2)
         bottom = top
-        left = int((base_image.shape[1] - results_image.shape[1])/2)
+        left = int((base_image.shape[1] - results_image.shape[1]) / 2)
         right = left
         results_image = cv.copyMakeBorder(results_image, top, bottom, left, right, cv.BORDER_CONSTANT, None, value)
     concaterated_image = np.concatenate((base_image, results_image), axis=1)
-    cv.namedWindow("window")#, cv.WND_PROP_FULLSCREEN)
+    cv.namedWindow("window")  # , cv.WND_PROP_FULLSCREEN)
 
     if record_labbeled:
         cv.setMouseCallback('window', mark_pollution)
     # if detected_results is None:
     #     detected_results = -1
-    cv.putText(concaterated_image, f"Detected pollution : {detected_results}", (900, 20), font, 0.5, detected_pollutions_color, 1)
-    cv.putText(concaterated_image, f"Current pollution : {pollution_database[p]}", (900, 40), font, 0.5, current_pollutions_color, 1)
+    cv.putText(concaterated_image, f"Detected pollution : {detected_results}", (900, 20), font, 0.5,
+               detected_pollutions_color, 1)
+    cv.putText(concaterated_image, f"Current pollution : {pollution_database[p]}", (900, 40), font, 0.5,
+               current_pollutions_color, 1)
 
     # for lpi in range(0, len(labelled_pollutions)):
     #     previous_pollutions_color = (0, 255, 255)
@@ -422,44 +455,48 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p, recor
     #     pollution_end_point = tuple(labelled_pollution_location_rectangle[1])
     #
     #     cv.rectangle(concaterated_image, pollution_start_point, pollution_end_point, previous_pollutions_color, 2)
-    
+
     cv.imshow('window', concaterated_image)
 
     key = cv.waitKey(0)
     save_pkl_image = False
 
-    if key == ord('w'):# choose image, small step
+    if key == ord('w'):  # choose image, small step
         i += 1
         if i >= max_i:
             print("koniec zdjec")
             return True, save_pkl_image
-    if key == ord('s'):# choose image, small step
+    if key == ord('s'):  # choose image, small step
         i -= 1
         if i < 0:
             i = 0
-    if key == ord('j'):# choose pollution type
+    if key == ord('j'):  # choose pollution type
         p -= 1
         if p < 0:
             p = max_p - 1
-    if key == ord('l'):# choose pollution type
+    if key == ord('l'):  # choose pollution type
         p += 1
         if p >= max_p:
             p = 0
-    if key == ord('d'):# choose image
+    if key == ord('d'):  # choose image
         i += 10
         if i >= max_i:
             print("koniec zdjec")
             return True, save_pkl_image
-    if key == ord('a'):# choose image
+    if key == ord('a'):  # choose image
         i -= 10
         if i < 0:
             i = 0
-    if key == ord('z'):# save pickle as png
+    if key == ord('z'):  # save pickle as png
         save_pkl_image = True
-    if key == 27:
+    if key == ord('q'):  # quit the program
+        print("Quitting the program.")
+        return True, save_pkl_image  # Exit the loop and program
+    if key == 27:  # ESC key to quit
         return True, save_pkl_image
-    
+
     return False, save_pkl_image
+
 
 def init_global_indexes():
     # init pollution index
@@ -473,30 +510,37 @@ def init_global_indexes():
 
     return
 
+
 def load_one_series_description(series_path):
     series_metadata_file_path = os.path.join(series_path[0], 'series_metadata.json')
     with open(series_metadata_file_path, 'r') as file:
         series_description = json.load(file)
     return series_description
 
+
 def load_one_series_metadata(series_description):
     series_meta_data = series_description['meta_data']
     return series_meta_data
 
+
 def load_one_series_image_data(series_meta_data):
     series_image_data = series_meta_data['image_meta_data']
     return series_image_data
+
 
 def get_images_index_max(test_path):
     # to analyse one pollution visual detection system records 10 images
     results_paths = dir_list(test_path)
     return len(results_paths)
 
-def update_series_description_pickle_path(series_description,series_path, image_key):
+
+def update_series_description_pickle_path(series_description, series_path, image_key):
     pickle_image_path = os.path.join(series_path[0], 'images', image_key + '.pkl')
     print(pickle_image_path)
-    series_description['meta_data']['image_meta_data'][image_key]['pickle_path'] = pickle_image_path  # update pickle_path
+    series_description['meta_data']['image_meta_data'][image_key][
+        'pickle_path'] = pickle_image_path  # update pickle_path
     return
+
 
 def get_detected_pollutions_pixels_count(series_path, results_folder_number):
     detected_results_path = os.path.join(series_path[1], str(results_folder_number), 'data.json')
@@ -506,6 +550,7 @@ def get_detected_pollutions_pixels_count(series_path, results_folder_number):
             detected_results_data = json.load(detected_results_file)
         detected_pollutions_pixels_count = detected_results_data["count"]
     return detected_pollutions_pixels_count
+
 
 def add_all_base_images(labbeled_image_description, series_image_data):
     global prev_i
@@ -520,6 +565,7 @@ def add_all_base_images(labbeled_image_description, series_image_data):
     labbeled_image_description['image_set_metadata'] = base_image_set_metadata
     return
 
+
 def save_series_labelled_metadata(series_path, series_labelled_metadata):
     # save labelled series json
     series_labelled_file_path = os.path.join(series_path[1], 'series_labelled_metadata.json')
@@ -527,6 +573,7 @@ def save_series_labelled_metadata(series_path, series_labelled_metadata):
         json.dump(series_labelled_metadata, labelled_file, indent=4, sort_keys=True)
         print('dumped results to ' + series_labelled_file_path)
     return
+
 
 def load_series_labelled_metadata(series_path):
     # load labelled series json
@@ -538,10 +585,11 @@ def load_series_labelled_metadata(series_path):
         if len(files) > 0:
             series_labelled_file_path = files[0]
         if series_labelled_file_path is not None:
-            with open(os.path.join(series_path[1],series_labelled_file_path), 'r') as labelled_file:
+            with open(os.path.join(series_path[1], series_labelled_file_path), 'r') as labelled_file:
                 series_labelled_metadata = json.load(labelled_file)
                 print('loaded series_labelled_metadata from ' + series_labelled_file_path)
     return series_labelled_metadata
+
 
 def review_data_from_results(data_path_main, meat_type):
     series_path_list = get_series_path_list(data_path_main, meat_type)
@@ -557,21 +605,21 @@ def review_data_from_results(data_path_main, meat_type):
         global i
         init_global_indexes()
 
-        max_i = get_images_index_max(series_path[1])*10
+        max_i = get_images_index_max(series_path[1]) * 10
         while True:
-        # for i in range(0, len(series_image_data), 10):
+            # for i in range(0, len(series_image_data), 10):
 
             image_key = 'ogx_image_' + str(i)
 
             # todo: correct this
             # update_series_description_pickle_path(series_description, series_path, image_key)
-            
-            results_folder_number = i//10+1
+
+            results_folder_number = i // 10 + 1
 
             # read results images
             base_image_path = os.path.join(series_path[1], str(results_folder_number), 'base_image_3.jpg')
             print(base_image_path)
-            base_image = cv.imread(base_image_path) 
+            base_image = cv.imread(base_image_path)
 
             results_image_path = os.path.join(series_path[1], str(results_folder_number), 'result_clean.jpg')
             print(results_image_path)
@@ -579,8 +627,9 @@ def review_data_from_results(data_path_main, meat_type):
 
             detected_pollutions_pixels_count = get_detected_pollutions_pixels_count(series_path, results_folder_number)
 
-            is_brake, _ = gui_control(base_image, results_image, detected_pollutions_pixels_count, max_i, len(pollution_database))
-            
+            is_brake, _ = gui_control(base_image, results_image, detected_pollutions_pixels_count, max_i,
+                                      len(pollution_database))
+
             # init series_labelled_metadata
             new_entry_name = 'result_' + str(results_folder_number)
             series_labelled_metadata[new_entry_name] = {}
@@ -593,25 +642,35 @@ def review_data_from_results(data_path_main, meat_type):
             # add labbeled by user and detected by detection system pollutions to series_labelled_metadata
             image_size = base_image.shape
             add_labelled_pollutions(series_labelled_metadata[new_entry_name], meat_type)
-            add_detected_pollutions(series_labelled_metadata[new_entry_name], image_size, detected_pollutions_pixels_count, results_image)
+            add_detected_pollutions(series_labelled_metadata[new_entry_name], image_size,
+                                    detected_pollutions_pixels_count, results_image)
             print('added label data and detected pollutions')
-            
+
             if is_brake:
                 save_series_labelled_metadata(series_path, series_labelled_metadata)
                 break
 
+
 def load_image(image_name, series_path, results_folder_number):
-    image_path = os.path.join(series_path[1], str(results_folder_number), image_name + '.png')
-    # print(results_image_path)
-    image = cv.imread(image_path)
+    extensions = ['.png', '.jpg', '.jpeg', '.bmp', '.tiff']  # Add any other required extensions here
+    image_path = None
+    image = None
+
+    for ext in extensions:
+        image_path = os.path.join(series_path[1], str(results_folder_number), image_name + ext)
+        if os.path.exists(image_path):
+            image = cv.imread(image_path)
+            if image is not None:
+                break
+
     if image is None:
-        image_path = os.path.join(series_path[1], str(results_folder_number),
-                                                      image_name + '.jpg')
-        image = cv.imread(image_path)
+        print(f"Warning: Could not load image for {image_name} with any of the extensions {extensions}")
     return image, image_path
 
-def show_labelled_results(data_path_main, meat_type, test_name, results_folder_name = 'results'):
-    series_path_list = get_series_path_list(data_path_main, meat_type, test_name, results_folder_name = results_folder_name)
+
+def show_labelled_results(data_path_main, meat_type, test_name, results_folder_name='results'):
+    series_path_list = get_series_path_list(data_path_main, meat_type, test_name,
+                                            results_folder_name=results_folder_name)
     for series_path in series_path_list:
         series_labelled_metadata = load_series_labelled_metadata(series_path)
         # load info from series_metadata.json
@@ -658,25 +717,34 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
             results_image, results_image_path = load_image('result_clean', series_path, results_folder_number)
 
             global pair_0_diff_channel_image
-            pair_0_diff_channel_image, pair_0_diff_channel_image_path = load_image('pair_0_diff_channel', series_path, results_folder_number)
+            pair_0_diff_channel_image, pair_0_diff_channel_image_path = load_image('pair_0_diff_channel', series_path,
+                                                                                   results_folder_number)
 
             global pair_1_diff_channel_image
-            pair_1_diff_channel_image, pair_1_diff_channel_image_path = load_image('pair_1_diff_channel', series_path, results_folder_number)
+            pair_1_diff_channel_image, pair_1_diff_channel_image_path = load_image('pair_1_diff_channel', series_path,
+                                                                                   results_folder_number)
 
             global gray_1_pollution_image_mask
-            gray_1_pollution_image_mask, gray_1_pollution_image_mask_path = load_image('gray_1_pollution_image_mask', series_path, results_folder_number)
+            gray_1_pollution_image_mask, gray_1_pollution_image_mask_path = load_image('gray_1_pollution_image_mask',
+                                                                                       series_path,
+                                                                                       results_folder_number)
 
             global pair_0_pollution_image_mask
-            pair_0_pollution_image_mask, pair_0_pollution_image_mask_path = load_image('pair_0_pollution_image_mask', series_path, results_folder_number)
+            pair_0_pollution_image_mask, pair_0_pollution_image_mask_path = load_image('pair_0_pollution_image_mask',
+                                                                                       series_path,
+                                                                                       results_folder_number)
 
             global pair_1_pollution_image_mask
-            pair_1_pollution_image_mask, pair_1_pollution_image_mask_path = load_image('pair_1_pollution_image_mask', series_path, results_folder_number)
+            pair_1_pollution_image_mask, pair_1_pollution_image_mask_path = load_image('pair_1_pollution_image_mask',
+                                                                                       series_path,
+                                                                                       results_folder_number)
 
             global conveyor_image_mask
-            conveyor_image_mask, conveyor_image_mask_path = load_image('pair_0_conveyor_mask', series_path, results_folder_number)
+            conveyor_image_mask, conveyor_image_mask_path = load_image('pair_0_conveyor_mask', series_path,
+                                                                       results_folder_number)
             if conveyor_image_mask is None:
-                conveyor_image_mask, conveyor_image_mask_path = load_image('pair_1_conveyor_mask', series_path, results_folder_number)
-
+                conveyor_image_mask, conveyor_image_mask_path = load_image('pair_1_conveyor_mask', series_path,
+                                                                           results_folder_number)
 
             detected_pollutions_pixels_count = get_detected_pollutions_pixels_count(series_path, results_folder_number)
             print('folder:', results_folder_number)
@@ -686,18 +754,20 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
             #     get_labelled_pollutions(series_labelled_metadata[new_entry_name])
 
             is_brake, save_pkl_image = gui_control(base_image, results_image, detected_pollutions_pixels_count, max_i,
-                                   len(pollution_database), False)
+                                                   len(pollution_database), False)
             if save_pkl_image:
                 if pkl_image is not None:
-                    pkl_folder_path = pkl_image_path = os.path.join('C:\\Users\\linnia1\\Pictures\\Saved Pictures\\', str(meat_type))
+                    pkl_folder_path = pkl_image_path = os.path.join('C:\\Users\\linnia1\\Pictures\\Saved Pictures\\',
+                                                                    str(meat_type))
                     if not os.path.exists(pkl_folder_path):
                         os.makedirs(pkl_folder_path)
                     pkl_image_path = pkl_folder_path + '\\pkl_image_' + str(i) + '.png'
                     cv.imwrite(pkl_image_path, cv_img)
-                    print('saved pkl_image in ' +  pkl_image_path)
+                    print('saved pkl_image in ' + pkl_image_path)
 
             if is_brake:
                 break
+
 
 def main():
     # config_gui()
@@ -741,15 +811,14 @@ def main():
     # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_True'
     # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test3', 'results_None_True'
 
-    data_path_main = r'C:\\Users\\linnia1\\Desktop\\odbior_08_03_24\\'  # początek ścieżki absolutnej
-    meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_None_True'
-
-
+    data_path_main = '/home/gregory/agromaks/test_0'  # początek ścieżki absolutnej
+    meat_type, test_name, results_folder_name = 'Dorsz', 'test0', 'results_None_True'
 
     # review_data_from_pickles(meat_type)
     # review_data_from_results(data_path_main, meat_type)
     show_labelled_results(data_path_main, meat_type, test_name, results_folder_name)
     cv.destroyAllWindows()
+
 
 if __name__ == "__main__":
     main()
