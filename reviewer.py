@@ -6,7 +6,7 @@ from ogximg import OGXImageSeries
 
 from blender import Blender
 from gui_controller import GUIController, GuiControlParams
-from image_loader import load_image, get_detected_pollutions_pixels_count
+from image_loader import load_image, load_pollution_size
 from label_manager import LabelManager
 from path_manager import PathManager
 
@@ -73,8 +73,8 @@ class Reviewer:
                                         pair_1_diff_channel_image, conveyor_image_mask, pair_1_pollution_image_mask,
                                         conveyor_image_mask)
 
-                detected_pollutions_pixels_count = get_detected_pollutions_pixels_count(series_path,
-                                                                                        results_folder_number)
+                detected_pollutions_pixels_count = load_pollution_size(series_path,
+                                                                       results_folder_number)
 
                 # Display blended images initially
                 self.blender.show_blend(0)

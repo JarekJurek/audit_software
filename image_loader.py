@@ -27,12 +27,12 @@ def load_image(image_name: str, series_path: tuple, results_folder_number: int) 
     return None, None
 
 
-def get_detected_pollutions_pixels_count(series_path: tuple, results_folder_number: int) -> Optional[int]:
+def load_pollution_size(series_path: tuple, results_folder_number: int) -> Optional[int]:
     """
     Load detected pollution pixel count from data.json.
 
     :param series_path: Tuple with paths, where series_path[1] points to the results directory.
-    :param results_folder_number: Folder number within the results directory.
+    :param results_folder_number: Folder number within the results' directory.
     :return: Pixel count of detected pollutions, or None if not available.
     """
     detected_results_path = os.path.join(series_path[1], str(results_folder_number), 'data.json')

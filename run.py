@@ -14,7 +14,6 @@ def main():
                           "Zolty",
                           "Pomaranczowy"]
 
-    # Initialize Reviewer with command-line arguments
     reviewer = Reviewer(
         data_path_main=data_path_main,
         meat_type=meat_type,
@@ -23,7 +22,6 @@ def main():
         pollution_database=pollution_database
     )
 
-    # Run the review process
     reviewer.run()
 
 
