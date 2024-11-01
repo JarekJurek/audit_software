@@ -1,6 +1,8 @@
 import json
 import os
 import tkinter as tk
+from pathlib import Path
+from typing import List
 
 import cv2 as cv
 import numpy as np
@@ -123,34 +125,61 @@ def changing_dir_meat(data_path_main,
     return path, meat_name
 
 
-def get_series_path_list(data_path_main, meat_name, test_name=None, results_folder_name='results'):
-    series_path_list = []
+def get_series_path_list(data_path_main: str, meat_name: str = None, test_name: str = None,
+                         results_folder_name: str = 'results') -> list:
+    """
+    Generate paths to acquisition image series and results directories.
+
+    :param str data_path_main: Main directory where data is stored.
+    :param str meat_name: Name of the meat type directory. If not provided, prompts for input.
+    :param str test_name: Specific test series name to filter results; if None, includes all tests.
+    :param str results_folder_name: Folder name for results within the main data path, defaults to 'results'.
+
+    :return list of tuple:
+        - series_path: Path to acquisition image series.
+        - results_path: Corresponding path to results directory.
+    """
+
     if meat_name is None:
-        meat_name = input('Podaj nazwe mięsa')
-        meat_name = meat_name.strip()
-    # data_path_main = r'C:\Users\linnia1\Desktop\test_08_23'  # początek ścieżki absolutnej
-    linia_path_main = os.path.join(data_path_main, meat_name, 'data')
-    linia_paths = dir_list(linia_path_main)
-    for linia_path in linia_paths:
-        test_path_main = os.path.join(linia_path_main, linia_path, meat_name)
-        test_paths = dir_list(test_path_main)
-        for test_path in test_paths:
-            series_path = os.path.join(test_path_main, test_path, '0', 'camera_series')
-            results_path = os.path.join(data_path_main, meat_name, results_folder_name, linia_path, meat_name,
-                                        test_path, '0')
-            if test_name is not None:  # skip not chosen series
-                if test_path != test_name:
-                    continue
-            series_path_list.append((series_path, results_path))
+        meat_name = input('Provide meat type: ').strip()
+
+    series_path_list = []
+    linia_path_main = Path(data_path_main) / meat_name / 'data'
+
+    for linia_path in dir_list(linia_path_main):
+        test_path_main = linia_path_main / linia_path / meat_name
+
+        for test_path in dir_list(test_path_main):
+            if test_name and test_path != test_name:
+                continue  # Skip if test_name is specified and doesn't match
+
+            series_path = test_path_main / test_path / '0' / 'camera_series'
+            results_path = Path(
+                data_path_main) / meat_name / results_folder_name / linia_path / meat_name / test_path / '0'
+
+            series_path_list.append((str(series_path), str(results_path)))
+
     return series_path_list
 
 
-def dir_list(path):  # ma zwracać listę folderów w folderze
-    folders = os.listdir(path)
-    # print(folders)
-    folders = [f for f in folders if os.path.isdir(path + '/' + f)]  # Filtering only folders
-    # print(folders)
-    return folders
+def dir_list(path: Path) -> List[str]:
+    """
+    Return a list of directory names in the provided path.
+
+    :param Path path: The path in which to look for directories.
+
+    :return List[str]: A list of names of directories within the specified path.
+    """
+    try:
+        # List all items and filter only directories
+        folders = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
+        return folders
+    except FileNotFoundError:
+        print("The specified path does not exist.")
+        return []
+    except PermissionError:
+        print("Permission denied: Unable to access the specified path.")
+        return []
 
 
 def dir_counter(path):  # liczy ilość foderów w ścieżce
@@ -386,7 +415,6 @@ def show_pair_1_blend():
 # def show_blended_images():
 
 def gui_control(base_image, results_image, detected_results, max_i, max_p, record_labbeled=True):
-    # init global variables for gui_control
     global refPt, prev_i, i, labelled_pollutions, p, concaterated_image, cropping
     refPt = []
     cropping = False
@@ -464,7 +492,7 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p, recor
     if key == ord('w'):  # choose image, small step
         i += 1
         if i >= max_i:
-            print("koniec zdjec")
+            print("End of images")
             return True, save_pkl_image
     if key == ord('s'):  # choose image, small step
         i -= 1
@@ -481,7 +509,7 @@ def gui_control(base_image, results_image, detected_results, max_i, max_p, recor
     if key == ord('d'):  # choose image
         i += 10
         if i >= max_i:
-            print("koniec zdjec")
+            print("End of images")
             return True, save_pkl_image
     if key == ord('a'):  # choose image
         i -= 10
@@ -770,51 +798,9 @@ def show_labelled_results(data_path_main, meat_type, test_name, results_folder_n
 
 
 def main():
-    # config_gui()
-    # W2 tests:
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_08_23\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa.old', 'test1', 'results_0_true'
-    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test1', 'results_-8_true'
-    # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_true'
-    # meat_type, test_name, results_folder_name = 'Przelyk wieprzowy', 'test1', 'results_-8_True'
-    # meat_type, test_name, results_folder_name = 'Serca wieprzowe', 'test0', 'results_0_True'
-    # meat_type, test_name, results_folder_name = 'Sledziona wieprzowa', 'test1', 'results_0_True'
-    # meat_type, test_name, results_folder_name = 'Watroba wieprzowa', 'test1', 'results_0_True'
-    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_0_True'
-
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_03_10_23\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_0_true'
-    # meat_type, test_name, results_folder_name = 'Watroba wieprzowa', 'test1', 'results_0_true'
-
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_05_10_23\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_-8_true'
-
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_06_10_23\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test1', 'results_-3_true'
-
-    # final tests
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_09_10_2023\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name d= 'Sledziona wieprzowa', 'test0', 'results_none_true'
-    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_-3_true'
-
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_11_10_2023\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name = 'Nerka wieprzowa', 'test0', 'results_-8_true'
-    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test0', 'results_-3_true'dd
-    # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_true'
-    # meat_type, test_name, results_folder_name = 'Serca wieprzowe', 'test0', 'results_0_true'
-
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\test_26_10_2023\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_none_true'
-
-    # data_path_main = r'C:\\Users\\linnia1\\Desktop\\odbior_21_02_24\\'  # początek ścieżki absolutnej
-    # meat_type, test_name, results_folder_name = 'Zoladki wieprzowe', 'test0', 'results_None_False'
-    # meat_type, test_name, results_folder_name = 'Podgardle swieze (rana kucia)', 'test0', 'results_0_True'
-    # meat_type, test_name, results_folder_name = 'Pluca wieprzowe', 'test3', 'results_None_True'
-
     data_path_main = '/home/gregory/agromaks/test_0'  # początek ścieżki absolutnej
     meat_type, test_name, results_folder_name = 'Dorsz', 'test0', 'results_None_True'
 
-    # review_data_from_pickles(meat_type)
     # review_data_from_results(data_path_main, meat_type)
     show_labelled_results(data_path_main, meat_type, test_name, results_folder_name)
     cv.destroyAllWindows()
