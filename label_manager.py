@@ -2,9 +2,7 @@ import cv2 as cv
 
 
 class LabelManager:
-    """
-    WIP: Manages labeling of detected pollution regions in images.
-    """
+    """WIP: Manages labeling of detected pollution regions in images."""
 
     def __init__(self):
         """

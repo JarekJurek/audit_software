@@ -1,3 +1,4 @@
+"""App spawning module."""
 import cv2 as cv
 from ogximg import OGXImageSeries
 
@@ -10,10 +11,7 @@ from utils import concatenate_images, display_info_text
 
 
 class Reviewer:
-    """
-    Orchestrates the review process for pollution detection, integrating path management,
-    metadata loading, image processing, blending, labeling, and GUI control.
-    """
+    """Main, top level, application code."""
 
     def __init__(self, data_path_main: str, meat_type: str, test_name: str, results_folder_name: str,
                  show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True):

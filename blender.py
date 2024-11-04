@@ -1,3 +1,4 @@
+"""Module for blending multiple mask images."""
 import cv2 as cv
 
 from image_loader import load_image
@@ -5,9 +6,7 @@ from utils import print_colors
 
 
 class Blender:
-    """
-    Handles image blending with trackbars for multiple image pairs.
-    """
+    """Handles image blending with trackbars for multiple image pairs."""
 
     def __init__(self):
         """

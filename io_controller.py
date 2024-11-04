@@ -1,10 +1,9 @@
+"""Input/output interaction module."""
 import cv2 as cv
 
 
 class IOController:
-    """
-    Controls the I/O signals from user.
-    """
+    """Controls the I/O signals from user."""
 
     def __init__(self, blender, label_manager):
         """

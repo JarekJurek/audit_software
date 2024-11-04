@@ -1,3 +1,4 @@
+"""Image loading module."""
 import json
 import os
 from typing import Tuple, Optional
