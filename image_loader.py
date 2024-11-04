@@ -41,16 +41,3 @@ def load_pollution_size(series_path: tuple, results_folder_number: int) -> Optio
             detected_results_data = json.load(detected_results_file)
             return detected_results_data.get("count")
     return None
-
-
-def print_colors(x: int, y: int, image: np.ndarray):
-    """
-    Print the color of the pixel at a specified (x, y) location in BGR format.
-
-    :param x: X-coordinate of the pixel.
-    :param y: Y-coordinate of the pixel.
-    :param image: Image array to fetch the pixel color.
-    """
-    colors = image[y, x]
-    print("BGR Format:", colors)
-    print("Coordinates of pixel: X:", x, "Y:", y)

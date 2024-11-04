@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Tuple
 
-from utils import dir_list  # Assuming `dir_list` is in a `utils.py` file
+from utils import dir_list
 
 
 class PathManager:
@@ -50,7 +50,8 @@ class PathManager:
 
         return series_path_list
 
-    def get_max_images(self, series_path: Tuple[str, str]) -> int:
+    @staticmethod
+    def get_max_images(series_path: Tuple[str, str]) -> int:
         """
         Calculate the maximum index for images in a series directory.
 
