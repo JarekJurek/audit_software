@@ -70,4 +70,4 @@ def print_colors(x: int, y: int, image: np.ndarray):
     :param np.ndarray image: Image array to fetch the pixel color.
     """
     colors = image[y, x]
-    print(f"BGR: {str(colors):<15} X:{x:<4} Y:{y:<4}")
+    print(f"Hue:{str(colors[0]):<4} X:{x:<4} Y:{y:<4}")

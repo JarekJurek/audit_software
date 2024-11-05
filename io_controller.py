@@ -20,34 +20,34 @@ class IOController:
         self.max_image_index = 0
 
     @staticmethod
-    def set_start_image(start_folder: int):
+    def set_start_image(start_folder: int) -> int:
         """Return the first image index in desired starting folder."""
         if start_folder == 0:
             print("ERROR: Folder indexing starts from one. Correct 'run.py'")
             exit(1)
         return start_folder * 10 - 1
 
-    def handle_key_press(self, key: int, max_images: int):
+    def handle_key_press(self, key: int, max_images: int) -> bool:
         """
         Handles key presses for image navigation, pollution labeling, and quitting.
 
         :param int key: Key press code.
         :param int max_images: number of images in series.
-        :return: Tuple (bool, bool) - Whether to quit and whether to save the current image.
+        :return: bool: Whether to quit the program.
         """
-        save_pkl_image = False
 
         if key in [ord('w'), ord('s')]:  # Single-step forward or backward
             self.current_image_index = self._navigate_images(key, max_images, step=1)
         elif key in [ord('d'), ord('a')]:  # Multistep forward or backward (e.g., 10 steps)
             self.current_image_index = self._navigate_images(key, max_images, step=10)
-        elif key == ord('z'):  # Save image
-            save_pkl_image = True
+        elif key == ord('u'):  # 'u' key to clear labels
+            self.label_manager.clear_labels()
+            return False
         elif key in [ord('q'), 27]:  # 'q' or ESC key to quit
             print("Quitting the program.")
-            return True, save_pkl_image
+            return True
 
-        return False, save_pkl_image
+        return False
 
     def _navigate_images(self, key: int, max_images: int, step: int) -> int:
         """
@@ -77,7 +77,7 @@ class IOController:
 
         return new_index
 
-    def io_control(self, max_images: int):
+    def io_control(self, max_images: int) -> int:
         """
         Control IO for navigating images.
         """

@@ -21,7 +21,7 @@ class Reviewer:
         self.results_folder_name = results_folder_name
 
         self.show_image_mask = show_image_mask
-        self.show_plk = show_pkl
+        self.show_pkl = show_pkl
         self.show_blenders = show_blenders
 
         self.path_manager = PathManager(data_path_main, meat_type, test_name, results_folder_name)
@@ -30,6 +30,7 @@ class Reviewer:
         self.io_controller = IOController(self.blender, self.label_manager, start_folder)
 
     def show_images(self):
+        """Display images along with existing labels, if any, and provide GUI for navigation and labeling."""
         series_path_list = self.path_manager.get_series_paths()
 
         for series_path in series_path_list:
@@ -42,13 +43,17 @@ class Reviewer:
 
             while True:
                 # displaying pkl image
-                if self.show_plk:
+                if self.show_pkl:
                     cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
                     pkl_image = cv.resize(cv_img, (512, 512))
+                    self.label_manager.display_labels(pkl_image, series_path[0], self.io_controller.current_image_index)  # Display with labels
+
+                    params = (self.label_manager, pkl_image, series_path[0], self.io_controller.current_image_index)
                     cv.imshow('pkl_image', pkl_image)
+                    cv.setMouseCallback("pkl_image", self.label_manager.draw_rectangle, param=params)
 
                 results_folder_number = self.io_controller.current_image_index // 10 + 1
-                print('Folder:', results_folder_number)
+                print(f'Folder: {results_folder_number}, image: {self.io_controller.current_image_index }')
                 base_image, _ = load_image('base_image_3', series_path, results_folder_number)
                 results_image, _ = load_image('result_clean', series_path, results_folder_number)
 
@@ -58,20 +63,18 @@ class Reviewer:
 
                 # displaying image_mask pair image
                 if self.show_image_mask:
-                    detection, pollution_size, = load_detection_data(series_path, results_folder_number)
+                    detection, pollution_size = load_detection_data(series_path, results_folder_number)
                     concatenated_image = concatenate_images(base_image, results_image)
                     signed_image = display_info_text(concatenated_image, detection, pollution_size)
                     cv.imshow('window', signed_image)
 
                 # GUI control for navigation and labeling
-                is_break, save_pkl_image = self.io_controller.io_control(max_images)
+                is_break = self.io_controller.io_control(max_images)
 
                 if is_break:
                     break
 
     def run(self):
-        """
-        Starts the reviewing process and handles the main program loop.
-        """
+        """Starts the reviewing process and handles the main program loop."""
         self.show_images()
         cv.destroyAllWindows()
