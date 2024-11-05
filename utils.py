@@ -71,3 +71,10 @@ def print_colors(x: int, y: int, image: np.ndarray):
     """
     colors = image[y, x]
     print(f"Hue:{str(colors[0]):<4} X:{x:<4} Y:{y:<4}")
+
+
+def resize_image(image, resize_fraction=0.4):
+    height, width = image.shape[:2]
+    new_width = int(width * resize_fraction)
+    new_height = int(height * resize_fraction)
+    return cv.resize(image, (new_width, new_height))

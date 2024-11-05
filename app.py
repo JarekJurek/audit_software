@@ -7,7 +7,7 @@ from image_loader import load_image, load_detection_data
 from io_controller import IOController
 from label_manager import LabelManager
 from path_manager import PathManager
-from utils import concatenate_images, display_info_text
+from utils import concatenate_images, display_info_text, resize_image
 
 
 class Reviewer:
@@ -45,7 +45,7 @@ class Reviewer:
                 # displaying pkl image
                 if self.show_pkl:
                     cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
-                    pkl_image = cv.resize(cv_img, (512, 512))
+                    pkl_image = resize_image(cv_img)
                     self.label_manager.display_labels(pkl_image, series_path[0], self.io_controller.current_image_index)  # Display with labels
 
                     params = (self.label_manager, pkl_image, series_path[0], self.io_controller.current_image_index)
