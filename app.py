@@ -13,7 +13,7 @@ from utils import concatenate_images, display_info_text
 class Reviewer:
     """Main, top level, application code."""
 
-    def __init__(self, data_path_main: str, meat_type: str, test_name: str, results_folder_name: str, start_folder: int=0,
+    def __init__(self, data_path_main: str, meat_type: str, test_name: str, results_folder_name: str, start_folder: int=1,
                  show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True):
         self.data_path_main = data_path_main
         self.meat_type = meat_type
