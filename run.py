@@ -12,7 +12,7 @@ def main():
         meat_type=meat_type,
         test_name=test_name,
         results_folder_name=results_folder_name,
-        start_folder=112,
+        start_folder=1,
         show_image_mask=True,
         show_pkl=True,
         show_blenders=True

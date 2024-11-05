@@ -20,8 +20,11 @@ class IOController:
         self.max_image_index = 0
 
     @staticmethod
-    def set_start_image(start_folder: str):
+    def set_start_image(start_folder: int):
         """Return the first image index in desired starting folder."""
+        if start_folder == 0:
+            print("ERROR: Folder indexing starts from one. Correct 'run.py'")
+            exit(1)
         return start_folder * 10 - 1
 
     def handle_key_press(self, key: int, max_images: int):

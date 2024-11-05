@@ -17,7 +17,7 @@ def dir_list(path: Path) -> List[str]:
     try:
         return [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
     except FileNotFoundError:
-        print("The specified path does not exist.")
+        print(f"The specified path does not exist: {path}.")
     except PermissionError:
         print("Permission denied: Unable to access the specified path.")
     return []
@@ -37,18 +37,28 @@ def concatenate_images(base_image: np.ndarray, results_image: np.ndarray) -> np.
     return concatenated_image
 
 
-def display_info_text(image, detected_results: int):
+def display_info_text(image, detection: bool, pollution_size: int):
     """
-    Displays pollution detection and current pollution information on the image.
+    Displays pollution detection and pollution size information below the image.
 
-    :param image: The image on which to overlay text information.
-    :param detected_results: The number of detected pollutions in the current image.
+    :param image: The main image to be displayed.
+    :param detection: Boolean indicating if pollution was detected.
+    :param pollution_size: Pixel size of the detected pollution.
     """
+    extra_space_height = 30
+    combined_image = cv.copyMakeBorder(image, 0, extra_space_height, 0, 0, cv.BORDER_CONSTANT, value=[0, 0, 0])
+
     font = cv.FONT_HERSHEY_SIMPLEX
-    detected_pollutions_color = (0, 255, 0)
+    text_color = (0, 255, 0)
 
-    text = f'Detected pollution size: {detected_results}'
-    cv.putText(image, text, (900, 20), font, 0.5, detected_pollutions_color, 1)
+    text = f'Detection: {detection}'
+
+    if detection:
+        text = f'{text}     Size: {pollution_size} px'
+
+    cv.putText(combined_image, text, (10, image.shape[0] + 20), font, 0.5, text_color, 1)
+
+    return combined_image
 
 
 def print_colors(x: int, y: int, image: np.ndarray):

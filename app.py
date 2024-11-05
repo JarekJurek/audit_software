@@ -3,7 +3,7 @@ import cv2 as cv
 from ogximg import OGXImageSeries
 
 from blender import Blender
-from image_loader import load_image, load_pollution_size
+from image_loader import load_image, load_detection_data
 from io_controller import IOController
 from label_manager import LabelManager
 from path_manager import PathManager
@@ -27,7 +27,7 @@ class Reviewer:
         self.path_manager = PathManager(data_path_main, meat_type, test_name, results_folder_name)
         self.blender = Blender()
         self.label_manager = LabelManager()
-        self.gui_controller = IOController(self.blender, self.label_manager, start_folder)
+        self.io_controller = IOController(self.blender, self.label_manager, start_folder)
 
     def show_images(self):
         series_path_list = self.path_manager.get_series_paths()
@@ -36,14 +36,18 @@ class Reviewer:
             ogx_series = OGXImageSeries.from_pickle(series_path[0])
             max_images = self.path_manager.get_max_images(series_path)
 
+            if self.io_controller.current_image_index > max_images:
+                print("ERROR: Provided starting folder index out of range. Correct 'run.py'")
+                exit(0)
+
             while True:
                 # displaying pkl image
                 if self.show_plk:
-                    cv_img, _ = ogx_series.get_image(self.gui_controller.current_image_index)
+                    cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
                     pkl_image = cv.resize(cv_img, (512, 512))
                     cv.imshow('pkl_image', pkl_image)
 
-                results_folder_number = self.gui_controller.current_image_index // 10 + 1
+                results_folder_number = self.io_controller.current_image_index // 10 + 1
                 print('Folder:', results_folder_number)
                 base_image, _ = load_image('base_image_3', series_path, results_folder_number)
                 results_image, _ = load_image('result_clean', series_path, results_folder_number)
@@ -54,13 +58,13 @@ class Reviewer:
 
                 # displaying image_mask pair image
                 if self.show_image_mask:
-                    detected_pollutions_pixels_count = load_pollution_size(series_path, results_folder_number)
+                    detection, pollution_size, = load_detection_data(series_path, results_folder_number)
                     concatenated_image = concatenate_images(base_image, results_image)
-                    display_info_text(concatenated_image, detected_pollutions_pixels_count)
-                    cv.imshow('window', concatenated_image)
+                    signed_image = display_info_text(concatenated_image, detection, pollution_size)
+                    cv.imshow('window', signed_image)
 
                 # GUI control for navigation and labeling
-                is_break, save_pkl_image = self.gui_controller.io_control(max_images)
+                is_break, save_pkl_image = self.io_controller.io_control(max_images)
 
                 if is_break:
                     break
