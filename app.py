@@ -13,7 +13,7 @@ from utils import concatenate_images, display_info_text
 class Reviewer:
     """Main, top level, application code."""
 
-    def __init__(self, data_path_main: str, meat_type: str, test_name: str, results_folder_name: str,
+    def __init__(self, data_path_main: str, meat_type: str, test_name: str, results_folder_name: str, start_folder: int=0,
                  show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True):
         self.data_path_main = data_path_main
         self.meat_type = meat_type
@@ -27,7 +27,7 @@ class Reviewer:
         self.path_manager = PathManager(data_path_main, meat_type, test_name, results_folder_name)
         self.blender = Blender()
         self.label_manager = LabelManager()
-        self.gui_controller = IOController(self.blender, self.label_manager)
+        self.gui_controller = IOController(self.blender, self.label_manager, start_folder)
 
     def show_images(self):
         series_path_list = self.path_manager.get_series_paths()
@@ -44,6 +44,7 @@ class Reviewer:
                     cv.imshow('pkl_image', pkl_image)
 
                 results_folder_number = self.gui_controller.current_image_index // 10 + 1
+                print('Folder:', results_folder_number)
                 base_image, _ = load_image('base_image_3', series_path, results_folder_number)
                 results_image, _ = load_image('result_clean', series_path, results_folder_number)
 

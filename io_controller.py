@@ -1,11 +1,13 @@
 """Input/output interaction module."""
 import cv2 as cv
 
+from label_manager import LabelManager
+from blender import Blender
 
 class IOController:
     """Controls the I/O signals from user."""
 
-    def __init__(self, blender, label_manager):
+    def __init__(self, blender: Blender, label_manager: LabelManager, start_folder: int):
         """
         Initializes IOController with instances of Blender and LabelManager.
 
@@ -14,8 +16,13 @@ class IOController:
         """
         self.blender = blender
         self.label_manager = label_manager
-        self.current_image_index = 0
+        self.current_image_index = self.set_start_image(start_folder)
         self.max_image_index = 0
+
+    @staticmethod
+    def set_start_image(start_folder: str):
+        """Return the first image index in desired starting folder."""
+        return start_folder * 10 - 1
 
     def handle_key_press(self, key: int, max_images: int):
         """
