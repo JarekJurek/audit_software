@@ -42,7 +42,7 @@ class Reviewer:
                 exit(0)
 
             while True:
-                # displaying pkl image
+                # Displaying pkl image
                 if self.show_pkl:
                     cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
                     pkl_image = resize_image(cv_img)
@@ -57,11 +57,11 @@ class Reviewer:
                 base_image, _ = load_image('base_image_3', series_path, results_folder_number)
                 results_image, _ = load_image('result_clean', series_path, results_folder_number)
 
-                # displaying blended images
+                # Displaying blended images
                 if self.show_blenders:
                     self.blender.show_blended_images(series_path, results_folder_number)
 
-                # displaying image_mask pair image
+                # Displaying image_mask pair image
                 if self.show_image_mask:
                     detection, pollution_size = load_detection_data(series_path, results_folder_number)
                     concatenated_image = concatenate_images(base_image, results_image)
