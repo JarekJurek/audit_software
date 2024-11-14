@@ -1,7 +1,7 @@
 
 # Evaluation and labelling software
 
-Project for displaying and creating labels of plastic pollutions to evaluate Agromaks_ogx-agromaks program.
+Project for displaying and creating labels on results images to evaluate detection program.
 The system supports interactive labeling, viewing, and management of pollution labels, helping to identify and
 address contamination issues.
 
