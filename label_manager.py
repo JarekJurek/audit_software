@@ -94,3 +94,13 @@ class LabelManager:
 
             # Display the final image with the completed rectangle
             cv.imshow('pkl_image', pkl_image)
+
+def get_image_labels(labels_path):
+    labelled_pollutions = []
+
+    if labels_path.exists():
+        with open(labels_path, 'r') as file:
+            for line in file:
+                labelled_pollutions.append([float(val) for val in line.strip().split()])
+
+    return labelled_pollutions

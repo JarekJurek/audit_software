@@ -1,6 +1,7 @@
 """Application bootstrap code."""
 from app import Reviewer
 from path_manager import PathManager
+from validator import Validator
 
 
 def main():
@@ -18,7 +19,10 @@ def main():
         show_blenders=True
     )
 
+    validator = Validator(path_manager=path_manager)
+
     reviewer.run()
+    validator.run()
 
 
 if __name__ == "__main__":
