@@ -1,6 +1,7 @@
 numpy
 opencv-python
 tk
+matplotlib
 
 # for linux run: `sudo apt install python3-tk`
 # install ogximg from Agromaks_ogx-image dir by: `python3 -m pip install -e .`

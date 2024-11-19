@@ -13,18 +13,13 @@ from utils import concatenate_images, display_info_text, resize_image
 class Reviewer:
     """Main, top level, application code."""
 
-    def __init__(self, data_path_main: str, meat_type: str, test_name: str, results_folder_name: str, start_folder: int=1,
+    def __init__(self, path_manager: PathManager, start_folder: int=1,
                  show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True):
-        self.data_path_main = data_path_main
-        self.meat_type = meat_type
-        self.test_name = test_name
-        self.results_folder_name = results_folder_name
-
         self.show_image_mask = show_image_mask
         self.show_pkl = show_pkl
         self.show_blenders = show_blenders
 
-        self.path_manager = PathManager(data_path_main, meat_type, test_name, results_folder_name)
+        self.path_manager = path_manager
         self.blender = Blender()
         self.label_manager = LabelManager()
         self.io_controller = IOController(self.blender, self.label_manager, start_folder)
@@ -49,8 +44,8 @@ class Reviewer:
                     self.label_manager.display_labels(pkl_image, series_path[0], self.io_controller.current_image_index)  # Display with labels
 
                     params = (self.label_manager, pkl_image, series_path[0], self.io_controller.current_image_index)
-                    cv.imshow('pkl_image', pkl_image)
-                    cv.setMouseCallback("pkl_image", self.label_manager.draw_rectangle, param=params)
+                    cv.imshow("Pkl image", pkl_image)
+                    cv.setMouseCallback("Pkl image", self.label_manager.draw_rectangle, param=params)
 
                 results_folder_number = self.io_controller.current_image_index // 10 + 1
                 print(f'Folder: {results_folder_number}, image: {self.io_controller.current_image_index }')
@@ -66,7 +61,7 @@ class Reviewer:
                     detection, pollution_size = load_detection_data(series_path, results_folder_number)
                     concatenated_image = concatenate_images(base_image, results_image)
                     signed_image = display_info_text(concatenated_image, detection, pollution_size)
-                    cv.imshow('window', signed_image)
+                    cv.imshow('Detection', signed_image)
 
                 # GUI control for navigation and labeling
                 is_break = self.io_controller.io_control(max_images)

@@ -1,24 +1,28 @@
 """Application bootstrap code."""
 from app import Reviewer
+from path_manager import PathManager
+from validator import Validator
 
 
 def main():
     """Module's main loop."""
-    data_path_main = r'C:\Agromaks_tests\odbior_05_04_24'  # początek ścieżki absolutnej
-    meat_type, test_name, results_folder_name = 'Nerka wolowa', 'test0', 'results_None_True'
+    data_path_main = r'/home/gregory/agromaks/test_0'  # początek ścieżki absolutnej
+    meat_type, test_name, results_folder_name = 'Dorsz', 'test0', 'results_None_True'
+
+    path_manager = PathManager(data_path_main, meat_type, test_name, results_folder_name)
 
     reviewer = Reviewer(
-        data_path_main=data_path_main,
-        meat_type=meat_type,
-        test_name=test_name,
-        results_folder_name=results_folder_name,
+        path_manager=path_manager,
         start_folder=1,
         show_image_mask=True,
         show_pkl=True,
         show_blenders=True
     )
 
+    validator = Validator(path_manager=path_manager)
+
     reviewer.run()
+    validator.run()
 
 
 if __name__ == "__main__":

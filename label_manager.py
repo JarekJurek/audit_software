@@ -82,7 +82,7 @@ class LabelManager:
                 cv.rectangle(current_image, label_manager.ref_point[0], (x, y), (255, 0, 0), 2)
 
             # Display the updated image with crosshair and rectangle
-            cv.imshow('pkl_image', current_image)
+            cv.imshow('Pkl image', current_image)
 
         elif event == cv.EVENT_LBUTTONUP:
             label_manager.ref_point.append((x, y))
@@ -93,4 +93,15 @@ class LabelManager:
             cv.rectangle(pkl_image, label_manager.ref_point[0], label_manager.ref_point[1], (255, 0, 0), 2)
 
             # Display the final image with the completed rectangle
-            cv.imshow('pkl_image', pkl_image)
+            cv.imshow('Pkl image', pkl_image)
+
+
+def get_image_labels(labels_path):
+    labelled_pollutions = []
+
+    if labels_path.exists():
+        with open(labels_path, 'r') as file:
+            for line in file:
+                labelled_pollutions.append([float(val) for val in line.strip().split()])
+
+    return labelled_pollutions
