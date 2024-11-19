@@ -89,16 +89,20 @@ class Validator:
         tn = self.results.true_negative
         fn = self.results.false_negative
 
-        print(f"True Positives: {tp}\nFalse Positives: {fp}\nTrue Negatives: {tn}\nFalse Negatives: {fn}")
+        print(f"Results:\n"
+              f"\tTrue Positives: {tp}\n"
+              f"\tFalse Positives: {fp}\n"
+              f"\tTrue Negatives: {tn}\n"
+              f"\tFalse Negatives: {fn}\n")
 
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
         f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
 
         print(f"Summary of Results:\n"
-              f"  Precision: {precision:.2f}\n"
-              f"  Recall: {recall:.2f}\n"
-              f"  F1 Score: {f1_score:.2f}")
+              f"\tPrecision: {precision:.2f}\n"
+              f"\tRecall: {recall:.2f}\n"
+              f"\tF1 Score: {f1_score:.2f}")
 
     def save_results(self):
         """Saves the validation results to a text file."""

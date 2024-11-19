@@ -6,8 +6,8 @@ from audit_software import Reviewer, PathManager, Validator
 
 def main():
     """Module's main loop."""
-    data_path_main = r'/home/gregory/agromaks/test_0'  # Editable
-    meat_type, test_name, results_folder_name = 'Dorsz', 'test0', 'results_None_True'  # Editable
+    data_path_main = r'C:\Agromaks_tests\odbior_05_04_24'  # Editable
+    meat_type, test_name, results_folder_name = 'Nerka wolowa', 'test0', 'results_None_True'  # Editable
 
     validation_save_path = data_path_main  # Editable
     save_validation_plot = False  # Editable

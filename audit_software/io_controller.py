@@ -45,7 +45,6 @@ class IOController:
             self.label_manager.clear_labels()
             return False
         elif key in [ord('q'), 27]:  # 'q' or ESC key to quit
-            print("Quitting the program.")
             return True
 
         return False
