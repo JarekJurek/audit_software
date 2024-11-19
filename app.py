@@ -13,18 +13,13 @@ from utils import concatenate_images, display_info_text, resize_image
 class Reviewer:
     """Main, top level, application code."""
 
-    def __init__(self, data_path_main: str, meat_type: str, test_name: str, results_folder_name: str, start_folder: int=1,
+    def __init__(self, path_manager: PathManager, start_folder: int=1,
                  show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True):
-        self.data_path_main = data_path_main
-        self.meat_type = meat_type
-        self.test_name = test_name
-        self.results_folder_name = results_folder_name
-
         self.show_image_mask = show_image_mask
         self.show_pkl = show_pkl
         self.show_blenders = show_blenders
 
-        self.path_manager = PathManager(data_path_main, meat_type, test_name, results_folder_name)
+        self.path_manager = path_manager
         self.blender = Blender()
         self.label_manager = LabelManager()
         self.io_controller = IOController(self.blender, self.label_manager, start_folder)
