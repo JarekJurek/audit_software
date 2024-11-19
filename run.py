@@ -11,7 +11,7 @@ def main():
     data_path_main = r'/home/gregory/agromaks/test_0'  # To edit
     meat_type, test_name, results_folder_name = 'Dorsz', 'test0', 'results_None_True' # To edit
 
-    validation_save_path = data_path_main  # To edit, path for saving validation results
+    validation_save_path = data_path_main  # To edit
     save_validation_plot = False  # To edit
     validation_plot_name = "confusion_matrix"  # To edit
 

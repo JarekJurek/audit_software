@@ -76,9 +76,7 @@ class Validator:
         return self.results
 
     def summarize_results(self):
-        """
-        Prints a summary of the validation results, including precision, recall, and F1 score.
-        """
+        """Prints a summary of the validation results, including precision, recall, and F1 score."""
         if not self.results:
             print("Error: Series needs to be validated first.")
             return
@@ -100,9 +98,7 @@ class Validator:
               f"  F1 Score: {f1_score:.2f}")
 
     def save_results(self):
-        """
-        Saves the validation results to a text file.
-        """
+        """Saves the validation results to a text file."""
         if not self.results:
             print("Error: Series needs to be validated first.")
             return
@@ -162,9 +158,7 @@ class Validator:
             plt.show()
 
     def run(self, save_plot: bool=False, plot_name: str ="confusion_matrix"):
-        """
-        Runs the entire validation process and outputs results.
-        """
+        """Runs the entire validation process and outputs results."""
         self.validate_series()
         self.summarize_results()
         self.plot_confusion_matrix(save_plot=save_plot, plot_name=plot_name)
