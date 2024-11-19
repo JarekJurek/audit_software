@@ -32,18 +32,18 @@ address contamination issues.
 ## Requirements
 
 Install the dependencies listed in `requirements.txt`:
-```commandline
+```bash
 pip install -r requirements.txt
 ```
 
 For Linux systems, run the following command to install additional dependencies:
-```commandline
+```bash
 sudo apt install python3-tk
 ```
 
 Also, install the custom ogximg package from the Agromaks_ogx-image directory:
 
-```commandline
+```bash
 python3 -m pip install -e .
 ```
 
@@ -72,7 +72,7 @@ show_blenders = False  # Boolean flag to display blended images.
 
 Run the application with:
 
-```commandline
+```bash
 python run.py
 ```
 
