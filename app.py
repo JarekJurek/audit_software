@@ -44,8 +44,8 @@ class Reviewer:
                     self.label_manager.display_labels(pkl_image, series_path[0], self.io_controller.current_image_index)  # Display with labels
 
                     params = (self.label_manager, pkl_image, series_path[0], self.io_controller.current_image_index)
-                    cv.imshow('pkl_image', pkl_image)
-                    cv.setMouseCallback("pkl_image", self.label_manager.draw_rectangle, param=params)
+                    cv.imshow("Pkl image", pkl_image)
+                    cv.setMouseCallback("Pkl image", self.label_manager.draw_rectangle, param=params)
 
                 results_folder_number = self.io_controller.current_image_index // 10 + 1
                 print(f'Folder: {results_folder_number}, image: {self.io_controller.current_image_index }')
@@ -61,7 +61,7 @@ class Reviewer:
                     detection, pollution_size = load_detection_data(series_path, results_folder_number)
                     concatenated_image = concatenate_images(base_image, results_image)
                     signed_image = display_info_text(concatenated_image, detection, pollution_size)
-                    cv.imshow('window', signed_image)
+                    cv.imshow('Detection', signed_image)
 
                 # GUI control for navigation and labeling
                 is_break = self.io_controller.io_control(max_images)
