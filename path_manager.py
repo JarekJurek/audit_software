@@ -8,7 +8,7 @@ from utils import dir_list
 class PathManager:
     """Manages paths for acquisition image series and results directories."""
 
-    def __init__(self, data_path_main: str, meat_name: str, test_name: str = None,
+    def __init__(self, data_path_main: Path, meat_name: str, test_name: str = None,
                  results_folder_name: str = 'results'):
         """
         Initializes PathManager with paths and naming information.
