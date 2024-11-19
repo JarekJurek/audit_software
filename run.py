@@ -1,28 +1,26 @@
 """Application bootstrap code."""
 from pathlib import Path
 
-from app import Reviewer
-from path_manager import PathManager
-from validator import Validator
+from audit_software import Reviewer, PathManager, Validator
 
 
 def main():
     """Module's main loop."""
-    data_path_main = r'/home/gregory/agromaks/test_0'  # To edit
-    meat_type, test_name, results_folder_name = 'Dorsz', 'test0', 'results_None_True' # To edit
+    data_path_main = r'/home/gregory/agromaks/test_0'  # Editable
+    meat_type, test_name, results_folder_name = 'Dorsz', 'test0', 'results_None_True'  # Editable
 
-    validation_save_path = data_path_main  # To edit
-    save_validation_plot = False  # To edit
-    validation_plot_name = "confusion_matrix"  # To edit
+    validation_save_path = data_path_main  # Editable
+    save_validation_plot = False  # Editable
+    validation_plot_name = "confusion_matrix"  # Editable
 
     path_manager = PathManager(Path(data_path_main), meat_type, test_name, results_folder_name)
 
     reviewer = Reviewer(
         path_manager=path_manager,
-        start_folder=1,  # To edit
-        show_image_mask=True,  # To edit
-        show_pkl=True,  # To edit
-        show_blenders=True  # To edit
+        start_folder=1,  # Editable
+        show_image_mask=True,  # Editable
+        show_pkl=True,  # Editable
+        show_blenders=True  # Editable
     )
 
     validator = Validator(

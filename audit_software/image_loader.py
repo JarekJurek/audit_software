@@ -8,7 +8,7 @@ import numpy as np
 
 
 def load_image(image_name: str, series_path: tuple, results_folder_number: int) -> Tuple[
-                Optional[np.ndarray], Optional[str]]:
+    Optional[np.ndarray], Optional[str]]:
     """
     Load an image from a series path with supported extensions.
 

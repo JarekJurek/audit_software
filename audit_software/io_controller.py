@@ -1,8 +1,9 @@
 """Input/output interaction module."""
 import cv2 as cv
 
-from label_manager import LabelManager
-from blender import Blender
+from audit_software.blender import Blender
+from audit_software.label_manager import LabelManager
+
 
 class IOController:
     """Controls the I/O signals from user."""

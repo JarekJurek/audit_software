@@ -3,11 +3,12 @@
 from pathlib import Path
 from typing import Optional
 
-from image_loader import load_detection_data
-from label_manager import get_image_labels
-from path_manager import PathManager
-from utils import dir_list
 import matplotlib.pyplot as plt
+
+from audit_software.image_loader import load_detection_data
+from audit_software.label_manager import get_image_labels
+from audit_software.path_manager import PathManager
+from audit_software.utils import dir_list
 
 
 class SeriesResults:
@@ -19,6 +20,7 @@ class SeriesResults:
         true_negative (int): Number of correctly identified negatives.
         false_negative (int): Number of incorrectly identified negatives.
     """
+
     def __init__(self):
         self.true_positive = 0
         self.false_positive = 0
@@ -35,6 +37,7 @@ class Validator:
         save_results_path (Path): Optional path to save validation results.
         results (SeriesResults): Stores the validation results after processing.
     """
+
     def __init__(self, path_manager: PathManager, save_results_path: Path = Path(__file__).parent):
         self.path_manager: PathManager = path_manager
         self.save_results_path: Path = save_results_path
@@ -157,7 +160,7 @@ class Validator:
         else:
             plt.show()
 
-    def run(self, save_plot: bool=False, plot_name: str ="confusion_matrix"):
+    def run(self, save_plot: bool = False, plot_name: str = "confusion_matrix"):
         """Runs the entire validation process and outputs results."""
         self.validate_series()
         self.summarize_results()

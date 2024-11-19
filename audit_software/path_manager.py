@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import List, Tuple
 
-from utils import dir_list
+from audit_software.utils import dir_list
 
 
 class PathManager:

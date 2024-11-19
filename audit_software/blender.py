@@ -1,8 +1,8 @@
 """Module for blending multiple mask images."""
 import cv2 as cv
 
-from image_loader import load_image
-from utils import print_colors
+from audit_software.image_loader import load_image
+from audit_software.utils import print_colors
 
 
 class Blender:

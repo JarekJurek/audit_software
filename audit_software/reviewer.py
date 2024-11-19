@@ -2,18 +2,18 @@
 import cv2 as cv
 from ogximg import OGXImageSeries
 
-from blender import Blender
-from image_loader import load_image, load_detection_data
-from io_controller import IOController
-from label_manager import LabelManager
-from path_manager import PathManager
-from utils import concatenate_images, display_info_text, resize_image
+from audit_software.blender import Blender
+from audit_software.image_loader import load_image, load_detection_data
+from audit_software.io_controller import IOController
+from audit_software.label_manager import LabelManager
+from audit_software.path_manager import PathManager
+from audit_software.utils import concatenate_images, display_info_text, resize_image
 
 
 class Reviewer:
     """Main, top level, application code."""
 
-    def __init__(self, path_manager: PathManager, start_folder: int=1,
+    def __init__(self, path_manager: PathManager, start_folder: int = 1,
                  show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True):
         self.show_image_mask = show_image_mask
         self.show_pkl = show_pkl
@@ -41,14 +41,15 @@ class Reviewer:
                 if self.show_pkl:
                     cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
                     pkl_image = resize_image(cv_img)
-                    self.label_manager.display_labels(pkl_image, series_path[0], self.io_controller.current_image_index)  # Display with labels
+                    self.label_manager.display_labels(pkl_image, series_path[0],
+                                                      self.io_controller.current_image_index)  # Display with labels
 
                     params = (self.label_manager, pkl_image, series_path[0], self.io_controller.current_image_index)
                     cv.imshow("Pkl image", pkl_image)
                     cv.setMouseCallback("Pkl image", self.label_manager.draw_rectangle, param=params)
 
                 results_folder_number = self.io_controller.current_image_index // 10 + 1
-                print(f'Folder: {results_folder_number}, image: {self.io_controller.current_image_index }')
+                print(f'Folder: {results_folder_number}, image: {self.io_controller.current_image_index}')
                 base_image, _ = load_image('base_image_3', series_path, results_folder_number)
                 results_image, _ = load_image('result_clean', series_path, results_folder_number)
 
