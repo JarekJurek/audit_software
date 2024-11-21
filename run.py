@@ -9,7 +9,7 @@ def main():
     data_path_main = r'C:\Agromaks_tests\odbior_05_04_24'  # Editable
     meat_type, test_name, results_folder_name = 'Nerka wolowa', 'test0', 'results_None_True'  # Editable
 
-    validation_save_path = data_path_main  # Editable
+    validation_save_path = Path(data_path_main) / meat_type  # Editable
     save_validation_plot = False  # Editable
     validation_plot_name = "confusion_matrix"  # Editable
 
