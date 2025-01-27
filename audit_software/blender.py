@@ -12,6 +12,8 @@ class Blender:
         """
         Initializes blending factors and images for different image pairs and blending types.
         """
+        self.windows_initialized = False
+
         # Initialize blending factors for two image pairs
         self.pair_0_diff_blend = 0.5
         self.pair_0_conv_blend = 0.0
@@ -46,6 +48,9 @@ class Blender:
         """
         Sets up GUI windows and trackbars for blending adjustments.
         """
+        if self.windows_initialized:
+            return
+
         # Create windows for displaying images
         cv.namedWindow('pair_0_diff_channel_image')
         cv.namedWindow('pair_1_diff_channel_image')
@@ -65,6 +70,8 @@ class Blender:
                           self.on_change_pair_1_conv_blend)
         cv.createTrackbar('pair_1_pollution_blend', 'pair_1_diff_channel_image', int(self.pair_1_pollution_blend * 100),
                           100, self.on_change_pair_1_pollution_blend)
+
+        self.windows_initialized = True
 
     def set_mouse_callbacks(self):
         """
