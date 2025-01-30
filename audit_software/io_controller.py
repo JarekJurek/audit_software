@@ -26,7 +26,7 @@ class IOController:
         if start_folder == 0:
             print("ERROR: Folder indexing starts from one. Correct 'run.py'")
             exit(1)
-        return start_folder * 10 - 1
+        return start_folder * 10
 
     def handle_key_press(self, key: int, max_images: int) -> bool:
         """

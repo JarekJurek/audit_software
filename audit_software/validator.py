@@ -59,7 +59,7 @@ class Validator:
             results_folders = dir_list(Path(series_path[1]))
 
             for results_folder_number in range(1, len(results_folders)):  # Folders from 1 to X
-                pkl_image_idx = (results_folder_number * 10) - 1
+                pkl_image_idx = (results_folder_number * 10)
 
                 detection, pollution_size = load_detection_data(series_path, results_folder_number)
 

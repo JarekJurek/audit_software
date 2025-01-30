@@ -1,6 +1,5 @@
 """App spawning module."""
 import cv2 as cv
-from ogximg import OGXImageSeries
 
 from audit_software.blender import Blender
 from audit_software.image_loader import load_image, load_detection_data
@@ -8,6 +7,7 @@ from audit_software.io_controller import IOController
 from audit_software.label_manager import LabelManager
 from audit_software.path_manager import PathManager
 from audit_software.utils import concatenate_images, display_info_text, resize_image
+from modules.image import ImageSeries
 
 
 class Reviewer:
@@ -29,7 +29,7 @@ class Reviewer:
         series_path_list = self.path_manager.get_series_paths()
 
         for series_path in series_path_list:
-            ogx_series = OGXImageSeries.from_pickle(series_path[0])
+            ogx_series = ImageSeries.from_pickle(series_path[0])
             max_images = self.path_manager.get_max_images(series_path)
 
             if self.io_controller.current_image_index > max_images:
@@ -48,9 +48,9 @@ class Reviewer:
                     cv.imshow("Pkl image", pkl_image)
                     cv.setMouseCallback("Pkl image", self.label_manager.draw_rectangle, param=params)
 
-                results_folder_number = self.io_controller.current_image_index // 10 + 1
+                results_folder_number = self.io_controller.current_image_index // 10
                 print(f'Folder: {results_folder_number}, image: {self.io_controller.current_image_index}')
-                base_image, _ = load_image('base_image_3', series_path, results_folder_number)
+                base_image, _ = load_image('base_image_1', series_path, results_folder_number)
                 results_image, _ = load_image('result_clean', series_path, results_folder_number)
 
                 # Displaying blended images
