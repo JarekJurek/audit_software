@@ -3,6 +3,7 @@ import cv2 as cv
 from ogximg import OGXImageSeries
 
 from audit_software.blender import Blender
+from audit_software.enums import KeyAction
 from audit_software.image_loader import load_image, load_detection_data
 from audit_software.io_controller import IOController
 from audit_software.label_manager import LabelManager
@@ -22,7 +23,7 @@ class Reviewer:
         self.path_manager = path_manager
         self.blender = Blender()
         self.label_manager = LabelManager()
-        self.io_controller = IOController(self.blender, self.label_manager, start_folder)
+        self.io_controller = IOController(self.blender, start_folder)
 
     def show_images(self):
         """Display images along with existing labels, if any, and provide GUI for navigation and labeling."""
@@ -65,10 +66,19 @@ class Reviewer:
                     cv.imshow('Detection', signed_image)
 
                 # GUI control for navigation and labeling
-                is_break = self.io_controller.io_control(max_images)
-
-                if is_break:
+                action = self.io_controller.get_io_action(max_images)
+                if action == KeyAction.NONE:
+                    continue
+                elif action == KeyAction.QUIT:
                     break
+                elif action == KeyAction.CLEAR_LABELS:
+                    self.label_manager.clear_labels()
+                elif action == KeyAction.SAVE_IMAGE:
+                    # self.label_manager.copy_labels()  # todo implement
+                    # self.save_png_img()  # todo implement
+                    pass
+                else:
+                    print('ERROR: received wrong key action')
 
     def run(self):
         """Starts the reviewing process and handles the main program loop."""

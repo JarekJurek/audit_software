@@ -2,21 +2,19 @@
 import cv2 as cv
 
 from audit_software.blender import Blender
-from audit_software.label_manager import LabelManager
+from enums import KeyAction
 
 
 class IOController:
     """Controls the I/O signals from user."""
 
-    def __init__(self, blender: Blender, label_manager: LabelManager, start_folder: int):
+    def __init__(self, blender: Blender, start_folder: int):
         """
         Initializes IOController with instances of Blender and LabelManager.
 
         :param blender: Blender instance for handling image blending.
-        :param label_manager: LabelManager instance for managing pollution labels.
         """
         self.blender = blender
-        self.label_manager = label_manager
         self.current_image_index = self.set_start_image(start_folder)
         self.max_image_index = 0
 
@@ -28,26 +26,26 @@ class IOController:
             exit(1)
         return start_folder * 10 - 1
 
-    def handle_key_press(self, key: int, max_images: int) -> bool:
+    def handle_key_press(self, key: int, max_images: int) -> KeyAction:
         """
         Handles key presses for image navigation, pollution labeling, and quitting.
 
         :param int key: Key press code.
         :param int max_images: number of images in series.
-        :return: bool: Whether to quit the program.
+        :return: KeyAction: action chosen by user.
         """
-
         if key in [ord('w'), ord('s')]:  # Single-step forward or backward
             self.current_image_index = self._navigate_images(key, max_images, step=1)
         elif key in [ord('d'), ord('a')]:  # Multistep forward or backward (e.g., 10 steps)
             self.current_image_index = self._navigate_images(key, max_images, step=10)
-        elif key == ord('u'):  # 'u' key to clear labels
-            self.label_manager.clear_labels()
-            return False
-        elif key in [ord('q'), 27]:  # 'q' or ESC key to quit
-            return True
+        elif key == ord('c'):
+            return KeyAction.SAVE_IMAGE
+        elif key == ord('u'):
+            return KeyAction.CLEAR_LABELS
+        elif key in [ord('q'), 27]:  # 'q' or ESC
+            return KeyAction.QUIT
 
-        return False
+        return KeyAction.NONE
 
     def _navigate_images(self, key: int, max_images: int, step: int) -> int:
         """
@@ -77,7 +75,7 @@ class IOController:
 
         return new_index
 
-    def io_control(self, max_images: int) -> int:
+    def get_io_action(self, max_images: int) -> KeyAction:
         """
         Control IO for navigating images.
         """
