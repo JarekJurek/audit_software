@@ -103,6 +103,7 @@ class LabelManager:
             return
         if not self._labels_path.exists():
             print('No labels found.')
+            return
         dest_label_path = dest_path / 'labels' / self._labels_path.name
         dest_label_path.parent.mkdir(parents=True, exist_ok=True)
         copyfile(self._labels_path, dest_label_path)
