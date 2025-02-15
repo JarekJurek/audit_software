@@ -104,7 +104,7 @@ class LabelManager:
         if not self._labels_path.exists():
             print('No labels found.')
         dest_label_path = dest_path / 'labels' / self._labels_path.name
-        dest_label_path.mkdir(parents=True, exist_ok=True)
+        dest_label_path.parent.mkdir(parents=True, exist_ok=True)
         copyfile(self._labels_path, dest_label_path)
         print(f'Copied labels {self._labels_path.parent} to {dest_label_path.parent}')
 

@@ -95,8 +95,9 @@ class Reviewer:
             print('ERROR: png images save path not specified')
             return
         png_img_path = self.save_path / 'images' / f'ogx_image_{self.io_controller.current_image_index}.png'
+        png_img_path.parent.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(str(png_img_path), self.cv_img)
-        print("Image saved in '.png' format")
+        print(f"Image saved in {png_img_path}")
 
     def run(self):
         """Starts the reviewing process and handles the main program loop."""
