@@ -2,7 +2,7 @@
 import cv2 as cv
 
 from audit_software.blender import Blender
-from enums import KeyAction
+from audit_software.enums import KeyAction
 
 
 class IOController:
