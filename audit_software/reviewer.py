@@ -1,8 +1,12 @@
 """App spawning module."""
+from pathlib import Path
+
+import cv2
 import cv2 as cv
 from ogximg import OGXImageSeries
 
 from audit_software.blender import Blender
+from audit_software.enums import KeyAction
 from audit_software.image_loader import load_image, load_detection_data
 from audit_software.io_controller import IOController
 from audit_software.label_manager import LabelManager
@@ -14,7 +18,8 @@ class Reviewer:
     """Main, top level, application code."""
 
     def __init__(self, path_manager: PathManager, start_folder: int = 1,
-                 show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True):
+                 show_image_mask: bool = True, show_pkl: bool = True, show_blenders: bool = True,
+                 save_path: Path = Path()):
         self.show_image_mask = show_image_mask
         self.show_pkl = show_pkl
         self.show_blenders = show_blenders
@@ -22,7 +27,10 @@ class Reviewer:
         self.path_manager = path_manager
         self.blender = Blender()
         self.label_manager = LabelManager()
-        self.io_controller = IOController(self.blender, self.label_manager, start_folder)
+        self.io_controller = IOController(self.blender, start_folder)
+
+        self.save_path: Path = save_path
+        self.cv_img = None
 
     def show_images(self):
         """Display images along with existing labels, if any, and provide GUI for navigation and labeling."""
@@ -39,8 +47,8 @@ class Reviewer:
             while True:
                 # Displaying pkl image
                 if self.show_pkl:
-                    cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
-                    pkl_image = resize_image(cv_img)
+                    self.cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
+                    pkl_image = resize_image(self.cv_img)
                     self.label_manager.display_labels(pkl_image, series_path[0],
                                                       self.io_controller.current_image_index)  # Display with labels
 
@@ -65,10 +73,31 @@ class Reviewer:
                     cv.imshow('Detection', signed_image)
 
                 # GUI control for navigation and labeling
-                is_break = self.io_controller.io_control(max_images)
-
-                if is_break:
+                action = self.io_controller.get_io_action(max_images)
+                if action == KeyAction.NONE:
+                    continue
+                elif action == KeyAction.QUIT:
                     break
+                elif action == KeyAction.CLEAR_LABELS:
+                    self.label_manager.clear_labels()
+                elif action == KeyAction.SAVE_IMAGE:
+                    if self.cv_img is None or not self.save_path.parts:
+                        print('No image or path specified')
+                        continue
+                    self.label_manager.copy_labels(dest_path=self.save_path)
+                    self.save_png_img()
+                else:
+                    print('ERROR: received wrong key action')
+
+    def save_png_img(self):
+        """Save current cv_img in png format in specified save_path."""
+        if not self.save_path.parts:
+            print('ERROR: png images save path not specified')
+            return
+        png_img_path = self.save_path / 'images' / f'ogx_image_{self.io_controller.current_image_index}.png'
+        png_img_path.parent.mkdir(parents=True, exist_ok=True)
+        cv2.imwrite(str(png_img_path), self.cv_img)
+        print(f"Image saved in {png_img_path}")
 
     def run(self):
         """Starts the reviewing process and handles the main program loop."""

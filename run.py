@@ -13,6 +13,8 @@ def main():
     save_validation_plot = False  # Editable
     validation_plot_name = "confusion_matrix"  # Editable
 
+    png_save_path = Path(data_path_main) / 'png_images' / meat_type  # Editable
+
     path_manager = PathManager(Path(data_path_main), meat_type, test_name, results_folder_name)
 
     reviewer = Reviewer(
@@ -20,7 +22,8 @@ def main():
         start_folder=1,  # Editable
         show_image_mask=True,  # Editable
         show_pkl=True,  # Editable
-        show_blenders=True  # Editable
+        show_blenders=True,  # Editable
+        save_path = png_save_path
     )
 
     validator = Validator(

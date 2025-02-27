@@ -1,4 +1,5 @@
 from pathlib import Path
+from shutil import copyfile
 
 import cv2 as cv
 
@@ -94,6 +95,19 @@ class LabelManager:
 
             # Display the final image with the completed rectangle
             cv.imshow('Pkl image', pkl_image)
+
+    def copy_labels(self, dest_path: Path):
+        """Copy labels from current to destination directory."""
+        if not dest_path.parts:
+            print('ERROR: png images save path not specified')
+            return
+        if not self._labels_path.exists():
+            print('No labels found.')
+            return
+        dest_label_path = dest_path / 'labels' / self._labels_path.name
+        dest_label_path.parent.mkdir(parents=True, exist_ok=True)
+        copyfile(self._labels_path, dest_label_path)
+        print(f'Copied labels {self._labels_path.parent} to {dest_label_path.parent}')
 
 
 def get_image_labels(labels_path):
