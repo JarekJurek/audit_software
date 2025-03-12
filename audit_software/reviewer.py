@@ -31,6 +31,7 @@ class Reviewer:
 
         self.save_path: Path = save_path
         self.cv_img = None
+        self.cv_img2 = None
 
     def show_images(self):
         """Display images along with existing labels, if any, and provide GUI for navigation and labeling."""
@@ -48,6 +49,7 @@ class Reviewer:
                 # Displaying pkl image
                 if self.show_pkl:
                     self.cv_img, _ = ogx_series.get_image(self.io_controller.current_image_index)
+                    self.cv_img2, _ = ogx_series.get_image(self.io_controller.current_image_index + 1)
                     pkl_image = resize_image(self.cv_img)
                     self.label_manager.display_labels(pkl_image, series_path[0],
                                                       self.io_controller.current_image_index)  # Display with labels
@@ -58,7 +60,7 @@ class Reviewer:
 
                 results_folder_number = self.io_controller.current_image_index // 10 + 1
                 print(f'Folder: {results_folder_number}, image: {self.io_controller.current_image_index}')
-                base_image, _ = load_image('base_image_3', series_path, results_folder_number)
+                base_image, _ = load_image('base_image_1', series_path, results_folder_number)
                 results_image, _ = load_image('result_clean', series_path, results_folder_number)
 
                 # Displaying blended images
@@ -89,15 +91,21 @@ class Reviewer:
                 else:
                     print('ERROR: received wrong key action')
 
-    def save_png_img(self):
-        """Save current cv_img in png format in specified save_path."""
-        if not self.save_path.parts:
-            print('ERROR: png images save path not specified')
-            return
-        png_img_path = self.save_path / 'images' / f'ogx_image_{self.io_controller.current_image_index}.png'
+    def _save_image(self, img, index):
+        """Helper function to save an image in PNG format."""
+        png_img_path = self.save_path / 'images' / f'ogx_image_{index}.png'
         png_img_path.parent.mkdir(parents=True, exist_ok=True)
-        cv2.imwrite(str(png_img_path), self.cv_img)
+        cv2.imwrite(str(png_img_path), img)
         print(f"Image saved in {png_img_path}")
+
+    def save_png_img(self):
+        """Save current images in PNG format in the specified save path."""
+        if not self.save_path.parts:
+            print('ERROR: PNG images save path not specified')
+            return
+
+        self._save_image(self.cv_img, self.io_controller.current_image_index)
+        self._save_image(self.cv_img2, self.io_controller.current_image_index + 1)
 
     def run(self):
         """Starts the reviewing process and handles the main program loop."""

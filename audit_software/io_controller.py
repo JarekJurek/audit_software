@@ -37,7 +37,7 @@ class IOController:
         if key in [ord('w'), ord('s')]:  # Single-step forward or backward
             self.current_image_index = self._navigate_images(key, max_images, step=1)
         elif key in [ord('d'), ord('a')]:  # Multistep forward or backward (e.g., 10 steps)
-            self.current_image_index = self._navigate_images(key, max_images, step=10)
+            self.current_image_index = self._navigate_images(key, max_images, step=8)
         elif key == ord('c'):
             return KeyAction.SAVE_IMAGE
         elif key == ord('u'):
