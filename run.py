@@ -22,18 +22,18 @@ def main():
     reviewer = Reviewer(
         path_manager=path_manager,
         start_folder=1,  # Editable
-        show_image_mask=True,  # Editable
+        show_image_mask=False,  # Editable
         show_pkl=True,  # Editable
-        show_blenders=True,  # Editable
-        save_path = png_save_path
+        show_blenders=False,  # Editable
+        save_path=png_save_path
     )
 
-    validator = Validator(
-        path_manager=path_manager,
-        save_results_path=Path(validation_save_path))
+    # validator = Validator(
+    #     path_manager=path_manager,
+    #     save_results_path=Path(validation_save_path))
 
     reviewer.run()
-    validator.run(save_validation_plot, validation_plot_name)
+    # validator.run(save_validation_plot, validation_plot_name)
 
 
 if __name__ == "__main__":
