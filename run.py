@@ -6,14 +6,16 @@ from audit_software import Reviewer, PathManager, Validator
 
 def main():
     """Module's main loop."""
-    data_path_main = r'C:\Agromaks_tests\odbior_05_04_24'  # Editable
-    meat_type, test_name, results_folder_name = 'Nerka wolowa', 'test0', 'results_None_True'  # Editable
+    root_path = Path(r'C:\Agromaks_tests')
+    test_date = '2025_03_07'  # Editable
+    meat_type, test_name, results_folder_name = 'Zoladki drobiowe', 'test0', 'results_None_True'  # Editable
+
+    data_path_main = root_path / test_date
+    png_save_path = Path(data_path_main) / 'png_images' / test_date / meat_type
 
     validation_save_path = Path(data_path_main) / meat_type  # Editable
     save_validation_plot = False  # Editable
-    validation_plot_name = "confusion_matrix"  # Editable
-
-    png_save_path = Path(data_path_main) / 'png_images' / meat_type  # Editable
+    validation_plot_name = "confusion_matrix"
 
     path_manager = PathManager(Path(data_path_main), meat_type, test_name, results_folder_name)
 
