@@ -39,6 +39,7 @@ class IOController:
         elif key in [ord('d'), ord('a')]:  # Multistep forward or backward (e.g., 10 steps)
             self.current_image_index = self._navigate_images(key, max_images, step=8)
         elif key == ord('c'):
+            self.current_image_index = self._navigate_images(key, max_images, step=8)
             return KeyAction.SAVE_IMAGE
         elif key == ord('u'):
             return KeyAction.CLEAR_LABELS
@@ -60,7 +61,7 @@ class IOController:
             new_index = self.current_image_index + step
         elif key == ord('s'):  # Move backward by step
             new_index = self.current_image_index - step
-        elif key == ord('d'):  # Multistep forward
+        elif key == ord('d') or key == ord('c'):  # Multistep forward
             new_index = self.current_image_index + step
         elif key == ord('a'):  # Multistep backward
             new_index = self.current_image_index - step
